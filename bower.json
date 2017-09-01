@@ -1,0 +1,22 @@
+{
+  "name": "phone_dial",
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "angular": "^1.6.1",
+    "angular-material": "^1.1.3",
+    "angular-ui-router": "^0.4.2",
+    "tether": "^1.4.0",
+    "font-awesome": "fontawesome#^4.7.0"
+  },
+  "dependenciesIgnore": {
+    "jquery": [
+      "**/!(dist)"
+    ],
+    "bootstrap": [
+      "**/!(dist)"
+    ]
+  },
+  "resolutions": {
+    "angular": "^1.0.8"
+  }
+}

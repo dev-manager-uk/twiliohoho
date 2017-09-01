@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html ng-app="app">
+  <head>
+    <meta charset="utf-8">
+    <title>Phone Dial</title>
+
+    <base href="/">
+
+    <!-- CSS Style setup-->
+    <link rel="stylesheet" href="./bower_components/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="./bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="./bower_components/angular-material/angular-material.min.css">
+
+    <!-- Bower dependecies-->
+    <script type="text/javascript" src="./bower_components/angular/angular.min.js"></script>
+		<script type="text/javascript" src="./bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="./bower_components/angular-aria/angular-aria.js"></script>
+    <script type="text/javascript" src="./bower_components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="./bower_components/angular-material/angular-material.min.js"></script>
+
+    <script type="text/javascript" src="./bower_components/tether/dist/js/tether.min.js"></script>
+    <script type="text/javascript" src="./bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="./bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <!--JS INIT-->
+    <script type="text/javascript" src="main.js"></script>
+    <script type="text/javascript" src="router.js"></script>
+
+    <!--Controllers-->
+    <script type="text/javascript" src="./app/controllers/callList.controller.js"></script>
+    <script type="text/javascript" src="./app/controllers/conferenceList.controller.js"></script>
+
+    <!--REST API-->
+    <script type="text/javascript" src="./app/communications/rest.service.js"></script>
+  </head>
+
+  <body>
+      <div class="container" ui-view="main"></div>
+  </body>
+</html>

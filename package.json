@@ -1,0 +1,23 @@
+{
+  "name": "phone_dial",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./src/server.js",
+  "scripts": {
+    "postinstall": "bower install",
+    "start": "bash scripts/start.sh",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.5.0",
+    "body-parser": "^1.16.0",
+    "bower": "^1.8.0",
+    "express": "^4.14.0",
+    "google-libphonenumber": "^3.0.0",
+    "object-to-xml": "^1.1.0",
+    "twilio": "^3.6.2"
+  }
+}

@@ -1,0 +1,25 @@
+<div style="width: 100%" align="center">
+  <h2>Calls In-Progress</h2>
+</div>
+<div class="alert alert-info" ng-if="msg">
+  {{msg}}
+</div>
+<div ng-repeat="call in calls" ng-if="!msg">
+  <md-card>
+    <md-card-content>
+      <p><b>From: </b>{{call.from}}</p>
+      <p><b>To: </b>{{call.to}}</p>
+      <p><b>Sid: </b>{{call.sid}}</p>
+      <p><b>Parent Call Sid: </b>{{call.parentCallSid}}</p>
+      <p><b>Start time: </b>{{call.startTime}}</p>
+    </md-card-content>
+    <md-card-actions layout="row" layout-align="begin center" layout-padding ng-if="call.parentCallSid">
+      <md-label><b>Transfer:</b></md-label>
+      <md-button class="md-primary" ng-click="createConference('101', call)">101</md-button>
+      <md-button class="md-primary" ng-click="createConference('102', call)">102</md-button>
+      <md-button class="md-primary" ng-click="createConference('103', call)">103</md-button>
+      <md-button class="md-primary" ng-click="createConference('104', call)">104</md-button>
+      <md-button class="md-primary" ng-click="createConference('105', call)">105</md-button>
+    </md-card-actions>
+  </md-card>
+</div>

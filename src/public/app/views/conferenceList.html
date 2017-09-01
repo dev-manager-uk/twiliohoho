@@ -1,0 +1,22 @@
+<div style="width: 100%" align="center">
+  <h2>Conferences In-Progress</h2>
+</div>
+<div class="alert alert-info" ng-if="msg">
+  {{msg}}
+</div>
+<div ng-repeat="conference in conferences" ng-if="!msg">
+  <md-card>
+    <md-card-content>
+      <p><b>Sid: </b>{{conference.sid}}</p>
+      <p><b>Name: </b>{{conference.friendlyName}}</p>
+      <p><b>Date Created: </b>{{conference.dateCreated}}</p>
+      <p><b>Participants: </b>
+      <div ng-repeat="participant in conference.participants" style="margin-left: 2vw">
+        <p><b>Call Sid: </b>{{participant.callSid}}</p>
+        <p><b>To: </b>{{participant.to}}</p>
+        <hr/>
+      </div>
+      </p>
+    </md-card-content>
+  </md-card>
+</div>

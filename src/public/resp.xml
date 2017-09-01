@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say> Hey! This is a demo conference line for Kenny. Hi Kenny!</Say>
+  <Dial>
+    <Conference>my-conference-line</Conference>
+  </Dial>
+</Response>
