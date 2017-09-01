@@ -44,4 +44,14 @@ app.controller("CallListController", function ($scope, $state, $interval, RESTSe
       }
     );
   }
+
+  $scope.dropCall = function(call){
+    RESTService.dropCall(call.sid).then(
+      function (response) {
+        console.log("response", response);
+      }, function (err) {
+        console.log("err", err);
+      }
+    );
+  }
 });

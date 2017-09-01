@@ -260,6 +260,24 @@ module.exports.clickClient = function (req, res, next) {
   });
 };
 
+module.exports.dropCall = function(req, res, next){
+  let callSid = req.body.callSid;
+  if(callSid === undefined){
+    return res
+    .status(405)
+    .send({ message: "There is no callSid" });
+  }
+  client.calls(callSid)
+  .update({
+    status: 'completed',
+  }, function(err, call){
+    if(err){
+      return res.status(500).send(err);
+    }
+    res.status(200).send({"message": "success"});
+  })
+}
+
 module.exports.callList = function (req, res, next) {
   client.calls.list(
     {

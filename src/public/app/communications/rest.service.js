@@ -40,4 +40,20 @@ app.service("RESTService", function ($http, $q) {
     });
     return defer.promise;
   }
+
+  this.dropCall = function (callSid) {
+    let defer = $q.defer();
+    $http({
+      method: 'POST',
+      url: '/Drop-Call',
+      data: {
+        "callSid": callSid
+      }
+    }).then(function (response) {
+      defer.resolve(response);
+    }, function (err) {
+      defer.reject(err);
+    });
+    return defer.promise;
+  }
 });
