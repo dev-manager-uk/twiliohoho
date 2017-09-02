@@ -366,56 +366,86 @@ module.exports.conferenceList = function (req, res, next) {
   );
 };
 
-module.exports.createConference = function (req, res, next) {
+module.exports.createConference = function(req, res, next) {
   // conference name will be a random number between 0 and 10000
   let conferenceName = Math.floor(Math.random() * 10000).toString();
 
   let user1;
+  let user2No;
   let user2CallSid;
   let clientNo;
+  let clientCallSid;
 
   if (req.body.user1 !== undefined) {
     user1 = req.body.user1;
   }
-  if (req.body.client !== undefined) {
-    clientNo = req.body.client;
+  if (req.body.user2No !== undefined) {
+    user2No = req.body.user2No;
   }
   if (req.body.user2CallSid !== undefined) {
     user2CallSid = req.body.user2CallSid;
   }
+  if (req.body.clientNo !== undefined) {
+    clientNo = req.body.clientNo;
+  }
+  if (req.body.clientCallSid !== undefined) {
+    clientCallSid = req.body.clientCallSid;
+  }
 
-  if (user1 === undefined || clientNo === undefined || user2CallSid === undefined ) {
-    return res.status(405).send(o2x({ message: "Missing parameters" }));
+  if (
+    user1 === undefined ||
+    clientNo === undefined ||
+    clientCallSid === undefined ||
+    clientNo === undefined ||
+    user2CallSid === undefined
+  ) {
+    return res.status(405).send({ message: "Missing parameters" });
   }
 
   let server = getServer(req);
-  let fullUrl = server + "/Join-Conference?id=" + conferenceName
+  let fullUrl = server + "/Join-Conference?id=" + conferenceName;
 
-  client.calls.create(
-    {
-      url: fullUrl,
-      method: "POST",
-      to: user1,
-      from: CALLER_ID
-    },
-    function (err, call) {
-      if (err) {
-        res.status(405).send({message: err });
-        return;
-      }
-      client.calls(user2CallSid)
-      .update({
+  client.calls(clientCallSid).update({
+    url: fullUrl,
+    method: "POST"
+  }, function(err, call) {
+    if (err) {
+      res.status(405).send({ message: err });
+      return;
+    }
+    conferenceName = Math.floor(Math.random() * 10000).toString();
+    fullUrl = server + "/Join-Conference?id=" + conferenceName;
+
+    client.calls.create(
+      {
         url: fullUrl,
-        method: 'POST',
-      }, function(err, call){
+        method: "POST",
+        to: user1,
+        from: CALLER_ID
+      },
+      function(err, call) {
         if (err) {
-          res.status(405).send({message: err });
+          res.status(405).send({ message: err });
           return;
         }
-        return res.status(200).send({ message: "Conference created" });
-      });
-    }
-  );
+        client.calls.create(
+          {
+            url: fullUrl,
+            method: "POST",
+            to: user2No,
+            from: CALLER_ID
+          },
+          function(err, call) {
+            if (err) {
+              res.status(405).send({ message: err });
+              return;
+            }
+            return res.status(200).send({ message: "Conferences created" });
+          }
+        );
+      }
+    );
+  });
 };
 
 // This is the endpoint that Twilio will call when you answer the phone

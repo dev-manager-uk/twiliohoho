@@ -33,16 +33,24 @@ app.controller("CallListController", function ($scope, $state, $interval, RESTSe
   $scope.createConference = function (user1, call) {
     let params = {};
     params.user1 = "sip:" + user1 + "@tweb.sip.us1.twilio.com";
-    params.client = call.to;
-    params.user2CallSid = call.parentCallSid;
 
-    RESTService.createConference(params).then(
-      function (response) {
-        console.log("response", response);
-      }, function (err) {
-        console.log("err", err);
+    params.clientNo = call.to;
+    params.clientCallSid = call.sid;
+
+    angular.forEach($scope.calls, function (value, key) {
+      if (value.sid === call.parentCallSid) {
+        params.user2No = value.to;
+        params.user2CallSid = value.sid;
+
+        RESTService.createConference(params).then(
+          function (response) {
+            console.log("response", response);
+         }, function (err) {
+            console.log("err", err);
+          }
+        );
       }
-    );
+    });
   }
 
   $scope.dropCall = function(call){
