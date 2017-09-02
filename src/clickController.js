@@ -17,7 +17,7 @@ function getServer(req) {
   return server;
 }
 
-module.exports.formatPhoneNumberPerUserPOST = function (req, res, next) {
+module.exports.formatPhoneNumberPerUserPOST = function(req, res, next) {
   if (
     apiKey === undefined ||
     apiSecret === undefined ||
