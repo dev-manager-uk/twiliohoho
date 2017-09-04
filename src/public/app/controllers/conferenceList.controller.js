@@ -29,4 +29,14 @@ app.controller("ConferenceListController", function($scope, $state, $interval, R
       }
     );
   },1000);
+
+  $scope.resumeCall = function(callSid, conferenceName){
+    RESTService.resumeCall(callSid, conferenceName).then(
+      function (response) {
+        console.log("response", response);
+      }, function (err) {
+        console.log("err", err);
+      }
+    );
+  }
 });

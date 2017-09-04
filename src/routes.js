@@ -18,6 +18,7 @@ module.exports.generateRoutes = function (app) {
   app.post("/Join-Conference", clickController.joinConference);
 
   app.post("/Drop-Call", clickController.dropCall);
+  app.post("/Join-Client-Conference", clickController.joinClientConference);
 
   app.use('/*', function(req, res){
     res.sendFile(__dirname + '/public/index.html');

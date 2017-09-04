@@ -56,4 +56,21 @@ app.service("RESTService", function ($http, $q) {
     });
     return defer.promise;
   }
+
+  this.resumeCall = function (callSid, conferenceName) {
+    let defer = $q.defer();
+    $http({
+      method: 'POST',
+      url: '/Join-Client-Conference',
+      data: {
+        "callSid": callSid,
+        "conferenceName": conferenceName
+      }
+    }).then(function (response) {
+      defer.resolve(response);
+    }, function (err) {
+      defer.reject(err);
+    });
+    return defer.promise;
+  }
 });

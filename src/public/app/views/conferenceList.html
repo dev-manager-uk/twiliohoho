@@ -4,16 +4,19 @@
 <div class="alert alert-info" ng-if="msg">
   {{msg}}
 </div>
-<div ng-repeat="conference in conferences" ng-if="!msg">
+<div ng-repeat="conference in conferences | orderBy: '-dateCreated'" ng-if="!msg">
   <md-card>
     <md-card-content>
       <p><b>Sid: </b>{{conference.sid}}</p>
       <p><b>Name: </b>{{conference.friendlyName}}</p>
       <p><b>Date Created: </b>{{conference.dateCreated}}</p>
       <p><b>Participants: </b>
-      <div ng-repeat="participant in conference.participants" style="margin-left: 2vw">
+      <div ng-repeat="participant in conference.participants | orderBy: '-callSid'" style="margin-left: 2vw">
         <p><b>Call Sid: </b>{{participant.callSid}}</p>
         <p><b>To: </b>{{participant.to}}</p>
+        <md-button class="md-raised md-primary" ng-click="resumeCall(participant.callSid, conference.friendlyName)" 
+          ng-if="participant.to.indexOf('sip:') > -1" >Resume: {{participant.to}}
+        </md-button>
         <hr/>
       </div>
       </p>

@@ -4,7 +4,7 @@
 <div class="alert alert-info" ng-if="msg">
   {{msg}}
 </div>
-<div ng-repeat="call in calls" ng-if="!msg">
+<div ng-repeat="call in calls | orderBy: '-startTime'" ng-if="!msg">
   <md-card>
     <md-card-content>
       <p><b>From: </b>{{call.from}}</p>

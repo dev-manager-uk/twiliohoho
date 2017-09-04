@@ -5,6 +5,13 @@ const twilio = require("twilio");
 const VoiceResponse = twilio.twiml.VoiceResponse;
 const phoneComponent = require("./phoneComponent");
 
+let databaseInMemory = [];
+const colectionStructure = {
+  clientConferenceName: "",
+  usersConferenceName: "",
+  timestamp: ""
+}
+
 const CALLER_ID = process.env.CALLER_ID;
 const apiKey = process.env.API_SID;
 const apiSecret = process.env.API_SECRET;
@@ -17,7 +24,7 @@ function getServer(req) {
   return server;
 }
 
-module.exports.formatPhoneNumberPerUserPOST = function(req, res, next) {
+module.exports.formatPhoneNumberPerUserPOST = function (req, res, next) {
   if (
     apiKey === undefined ||
     apiSecret === undefined ||
@@ -260,22 +267,22 @@ module.exports.clickClient = function (req, res, next) {
   });
 };
 
-module.exports.dropCall = function(req, res, next){
+module.exports.dropCall = function (req, res, next) {
   let callSid = req.body.callSid;
-  if(callSid === undefined){
+  if (callSid === undefined) {
     return res
-    .status(405)
-    .send({ message: "There is no callSid" });
+      .status(405)
+      .send({ message: "There is no callSid" });
   }
   client.calls(callSid)
-  .update({
-    status: 'completed',
-  }, function(err, call){
-    if(err){
-      return res.status(500).send(err);
-    }
-    res.status(200).send({"message": "success"});
-  })
+    .update({
+      status: 'completed',
+    }, function (err, call) {
+      if (err) {
+        return res.status(500).send(err);
+      }
+      res.status(200).send({ "message": "success" });
+    })
 }
 
 module.exports.callList = function (req, res, next) {
@@ -303,7 +310,7 @@ module.exports.callList = function (req, res, next) {
   );
 };
 
-function getCall(callSid, cb){
+function getCall(callSid, cb) {
   client
     .calls(callSid)
     .fetch()
@@ -317,9 +324,9 @@ function getCall(callSid, cb){
 
 function getParticipants(progressConference, cb) {
   let conf = client.conferences(progressConference.sid);
-  conf.participants.list({}, function(err, data){
+  conf.participants.list({}, function (err, data) {
     async.each(data, function (participant, next) {
-      getCall(participant.callSid, function(err, result){
+      getCall(participant.callSid, function (err, result) {
         let part = {
           "callSid": participant.callSid,
           "to": result.to,
@@ -343,6 +350,11 @@ module.exports.conferenceList = function (req, res, next) {
       if (err) {
         return res.status(500).send(err);
       }
+
+      if(data.length < 1 && databaseInMemory.length >= 1){
+        databaseInMemory = [];
+      }
+
       let arrayOfConferences = [];
 
       async.each(data, function (conference, next) {
@@ -352,8 +364,8 @@ module.exports.conferenceList = function (req, res, next) {
         progressConference.sid = conference.sid;
         progressConference.friendlyName = conference.friendlyName;
         progressConference.dateCreated = conference.dateCreated;
-        getParticipants(progressConference, function(err, result){
-          if(err){
+        getParticipants(progressConference, function (err, result) {
+          if (err) {
             return next();
           }
           arrayOfConferences.push(result);
@@ -366,7 +378,7 @@ module.exports.conferenceList = function (req, res, next) {
   );
 };
 
-module.exports.createConference = function(req, res, next) {
+module.exports.createConference = function (req, res, next) {
   // conference name will be a random number between 0 and 10000
   let conferenceName = Math.floor(Math.random() * 10000).toString();
 
@@ -402,19 +414,27 @@ module.exports.createConference = function(req, res, next) {
     return res.status(405).send({ message: "Missing parameters" });
   }
 
+  let newCollection = colectionStructure;
+
   let server = getServer(req);
   let fullUrl = server + "/Join-Conference?id=" + conferenceName;
 
   client.calls(clientCallSid).update({
     url: fullUrl,
     method: "POST"
-  }, function(err, call) {
+  }, function (err, call) {
     if (err) {
       res.status(405).send({ message: err });
       return;
     }
+
+    newCollection.clientConferenceName = conferenceName;
+
     conferenceName = Math.floor(Math.random() * 10000).toString();
     fullUrl = server + "/Join-Conference?id=" + conferenceName;
+
+    newCollection.usersConferenceName = conferenceName;
+    newCollection.timestamp = Date.now();
 
     client.calls.create(
       {
@@ -423,7 +443,7 @@ module.exports.createConference = function(req, res, next) {
         to: user1,
         from: CALLER_ID
       },
-      function(err, call) {
+      function (err, call) {
         if (err) {
           res.status(405).send({ message: err });
           return;
@@ -435,11 +455,12 @@ module.exports.createConference = function(req, res, next) {
             to: user2No,
             from: CALLER_ID
           },
-          function(err, call) {
+          function (err, call) {
             if (err) {
               res.status(405).send({ message: err });
               return;
             }
+            databaseInMemory.push(newCollection);
             return res.status(200).send({ message: "Conferences created" });
           }
         );
@@ -468,3 +489,43 @@ module.exports.joinConference = function (req, res, next) {
   res.set("Content-Type", "text/xml");
   res.send(twiml.toString());
 };
+
+module.exports.joinClientConference = function (req, res, next) {
+  let callSid = req.body.callSid;
+  let conferenceName = req.body.conferenceName;
+
+  if (callSid === undefined || conferenceName === undefined) {
+    return res.status(405).send({ message: "Missing parameters" });
+  }
+
+  let isCallFound = false;
+  let error = {
+    hasError: false,
+    err: ""
+  };
+
+  databaseInMemory.forEach(function (doc) {
+    if (doc.usersConferenceName === conferenceName && !isCallFound) {
+      isCallFound = true;
+
+      let server = getServer(req);
+      let fullUrl = server + "/Join-Conference?id=" + doc.clientConferenceName;
+
+      client.calls(callSid).update({
+        url: fullUrl,
+        method: "POST"
+      }, function (err, call) {
+        if (err) {
+          error.hasError = true;
+          error.err = err;
+        }
+      });
+    }
+  });
+
+  if(error.hasError){
+    return res.status(405).send({ message: error.err });
+  }else{
+    return res.status(200).send({ message: "Ok" });
+  }
+}
