@@ -4,6 +4,34 @@ app.controller("CallListController", function ($scope, $state, $interval, RESTSe
 
   $scope.calls = [];
 
+  $scope.transferNumbers = [
+    {
+      number: "sip:101@tweb.sip.us1.twilio.com",
+      text:"101",
+      status: "free"
+    },
+    {
+      number: "sip:102@tweb.sip.us1.twilio.com",
+      text:"102",
+      status: "free"
+    },
+    {
+      number: "sip:103@tweb.sip.us1.twilio.com",
+      text:"103",
+      status: "free"
+    },
+    {
+      number: "sip:104@tweb.sip.us1.twilio.com",
+      text:"104",
+      status: "free"
+    },
+    {
+      number: "sip:105@tweb.sip.us1.twilio.com",
+      text:"105",
+      status: "free"
+    }
+  ];
+
   RESTService.getCallList().then(
     function (response) {
       $scope.calls = response.data;
@@ -24,6 +52,12 @@ app.controller("CallListController", function ($scope, $state, $interval, RESTSe
         if ($scope.calls.length === 0) {
           $scope.msg = "There is no call in progress"
         }
+        else{
+          // angular.forEach($scope.calls, function (value, key) {
+          //   if (value.to === call.parentCallSid) {
+          //   }
+          // });
+        }
       }, function (err) {
         console.log("err", err);
       }
@@ -32,8 +66,7 @@ app.controller("CallListController", function ($scope, $state, $interval, RESTSe
 
   $scope.createConference = function (user1, call) {
     let params = {};
-    params.user1 = "sip:" + user1 + "@tweb.sip.us1.twilio.com";
-
+    params.user1 = user1
     params.clientNo = call.to;
     params.clientCallSid = call.sid;
 
