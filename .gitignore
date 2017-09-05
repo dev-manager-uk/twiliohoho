@@ -26,3 +26,6 @@ npm-debug.log
 node_modules/
 src/public/bower_components
 src/public/styles/css/themes
+
+#CONFIG
+.env

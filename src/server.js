@@ -1,4 +1,5 @@
 'use strict';
+const config = require('./config');
 const express = require('express');
 const bodyParser = require('body-parser');
 var path = require('path');
@@ -11,6 +12,6 @@ app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x
 
 routes.generateRoutes(app);
 
-var server = app.listen(process.env.PORT || 3000, function () {
+var server = app.listen(config.port || 3000, function () {
   console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
 });

@@ -1,4 +1,5 @@
 "use strict";
+const config = require('./config');
 const async = require('async');
 const o2x = require("object-to-xml");
 const twilio = require("twilio");
@@ -12,12 +13,9 @@ const colectionStructure = {
   timestamp: ""
 }
 
-const CALLER_ID = process.env.CALLER_ID;
-const apiKey = process.env.API_SID;
-const apiSecret = process.env.API_SECRET;
-const accountSid = process.env.ACCOUNT_SID;
-
-const client = twilio(apiKey, apiSecret, { accountSid: accountSid });
+const client = twilio(config.twilio.apiKey, config.twilio.apiSecret, {
+  accountSid: config.twilio.accountSid
+});
 
 function getServer(req) {
   let server = req.protocol + "://" + req.get("host");
@@ -26,9 +24,9 @@ function getServer(req) {
 
 module.exports.formatPhoneNumberPerUserPOST = function (req, res, next) {
   if (
-    apiKey === undefined ||
-    apiSecret === undefined ||
-    accountSid === undefined
+    config.twilio.apiKey === undefined ||
+    config.twilio.apiSecret === undefined ||
+    config.twilio.accountSid === undefined
   ) {
     return res
       .status(405)
@@ -93,7 +91,7 @@ module.exports.formatPhoneNumberPerUserPOST = function (req, res, next) {
         url: fullUrl + "?number=" + called,
         method: "POST",
         to: userCall,
-        from: CALLER_ID
+        from: config.twilio.callerId
       },
       function (err, call) {
         if (err) {
@@ -146,7 +144,7 @@ module.exports.outboundCallPOST = function (req, res, next) {
         Response: {
           Dial: {
             "@": {
-              callerId: CALLER_ID
+              callerId: config.twilio.callerId
             },
             "#": {
               Number: returnedNumber
@@ -198,7 +196,7 @@ module.exports.outboundCallGET = function (req, res, next) {
         Response: {
           Dial: {
             "@": {
-              callerId: CALLER_ID
+              callerId: config.twilio.callerId
             },
             "#": {
               Number: returnedNumber
@@ -255,7 +253,7 @@ module.exports.clickClient = function (req, res, next) {
         Response: {
           Dial: {
             "@": {
-              callerId: CALLER_ID
+              callerId: config.twilio.callerId
             },
             "#": {
               Number: returnedNumber
@@ -441,7 +439,7 @@ module.exports.createConference = function (req, res, next) {
         url: fullUrl,
         method: "POST",
         to: user1,
-        from: CALLER_ID
+        from: config.twilio.callerId
       },
       function (err, call) {
         if (err) {
@@ -453,7 +451,7 @@ module.exports.createConference = function (req, res, next) {
             url: fullUrl,
             method: "POST",
             to: user2No,
-            from: CALLER_ID
+            from: config.twilio.callerId
           },
           function (err, call) {
             if (err) {
