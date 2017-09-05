@@ -28,7 +28,7 @@ https://github.com/philnash/useful-twilio-functions/tree/master/hunt
 You will need some credentials and other information from your [Twilio account](https://www.twilio.com/console). They will need to be set as environment variables on the platform that you deploy the application to. Below you will find the config variable name and where you can find it.
 
 | Key         | Explanation |
-|---------------------------|
+|-------------|-------------|
 | ACCOUNT_SID | The ID of your Twilio account from https://www.twilio.com/console/account/settings |
 | API_SID     | The ID of your new API Key from https://www.twilio.com/console/runtime/api-keys |
 | API_SECRET  | The secret for your new API Key from https://www.twilio.com/console/runtime/api-keys |
