@@ -84,7 +84,7 @@ module.exports.formatPhoneNumberPerUserPOST = function (req, res, next) {
     }
     let server = getServer(req);
     let fullUrl = server + "/Click-Dial";
-    let userCall = "sip:" + user + "@tweb.sip.us1.twilio.com";
+    let userCall = "sip:" + user + "@" + config.twilio.sipDomain;
 
     client.calls.create(
       {
@@ -438,7 +438,7 @@ module.exports.createConference = function (req, res, next) {
       {
         url: fullUrl,
         method: "POST",
-        to: user1,
+        to: "sip:" + user1 + "@" + config.twilio.sipDomain,
         from: config.twilio.callerId
       },
       function (err, call) {
