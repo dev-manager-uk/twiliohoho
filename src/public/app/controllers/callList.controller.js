@@ -32,19 +32,7 @@ app.controller("CallListController", function ($scope, $state, $interval, RESTSe
     }
   ];
 
-  RESTService.getCallList().then(
-    function (response) {
-      $scope.calls = response.data;
-      $scope.msg = undefined;
-      if ($scope.calls.length === 0) {
-        $scope.msg = "There is no call in progress"
-      }
-    }, function (err) {
-      console.log("err", err);
-    }
-  );
-
-  $interval(function () {
+  function getCallList(){
     RESTService.getCallList().then(
       function (response) {
         $scope.calls = response.data;
@@ -53,15 +41,24 @@ app.controller("CallListController", function ($scope, $state, $interval, RESTSe
           $scope.msg = "There is no call in progress"
         }
         else{
-          // angular.forEach($scope.calls, function (value, key) {
-          //   if (value.to === call.parentCallSid) {
-          //   }
-          // });
+          angular.forEach($scope.calls, function (callVal, callKey) {
+            angular.forEach($scope.transferNumbers, function(transferNoVal, transferNoKey){
+              if(transferNoVal.number === callVal.to){
+                transferNoVal.status = "busy";
+              }
+            });
+          });
         }
       }, function (err) {
         console.log("err", err);
       }
     );
+  }
+
+  getCallList();
+
+  $interval(function () {
+    getCallList();
   }, 1000);
 
   $scope.createConference = function (user1, call) {
