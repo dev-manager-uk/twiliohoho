@@ -44,6 +44,8 @@ You will need some credentials and other information from your [Twilio account](
 
 ### To run locally: ###
 
+You will need the latest version of Node.js in LTS. At time of writing, this is 6.11.2.
+
 Clone the repo:
 
 ```bash

@@ -11,6 +11,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "engines" : {
+    "node" : "6.11.x"
+  },
   "dependencies": {
     "async": "^2.5.0",
     "body-parser": "^1.16.0",
