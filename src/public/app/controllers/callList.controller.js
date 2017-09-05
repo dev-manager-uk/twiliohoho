@@ -1,54 +1,44 @@
-'use strict';
-app.controller("CallListController", function ($scope, $state, $interval, RESTService) {
-
+"use strict";
+app.controller("CallListController", function(
+  $scope,
+  $state,
+  $interval,
+  RESTService
+) {
   $scope.calls = [];
+  $scope.transferNumbers = [];
 
-  $scope.transferNumbers = [
-    {
-      number: "sip:101@tweb.sip.us1.twilio.com",
-      text:"101",
-      status: "free"
-    },
-    {
-      number: "sip:102@tweb.sip.us1.twilio.com",
-      text:"102",
-      status: "free"
-    },
-    {
-      number: "sip:103@tweb.sip.us1.twilio.com",
-      text:"103",
-      status: "free"
-    },
-    {
-      number: "sip:104@tweb.sip.us1.twilio.com",
-      text:"104",
-      status: "free"
-    },
-    {
-      number: "sip:105@tweb.sip.us1.twilio.com",
-      text:"105",
-      status: "free"
+  function getCallList() {
+    if ($scope.transferNumbers.length < 1) {
+      RESTService.getUsers().then(
+        function(response) {
+          $scope.transferNumbers = response.data.users;
+        },
+        function(err) {
+          console.log("Error to retrieve users", err);
+        }
+      );
     }
-  ];
-
-  function getCallList(){
     RESTService.getCallList().then(
-      function (response) {
+      function(response) {
         $scope.calls = response.data;
         $scope.msg = undefined;
         if ($scope.calls.length === 0) {
-          $scope.msg = "There is no call in progress"
-        }
-        else{
-          angular.forEach($scope.calls, function (callVal, callKey) {
-            angular.forEach($scope.transferNumbers, function(transferNoVal, transferNoKey){
-              if(transferNoVal.number === callVal.to){
+          $scope.msg = "There is no call in progress";
+        } else {
+          angular.forEach($scope.calls, function(callVal, callKey) {
+            angular.forEach($scope.transferNumbers, function(
+              transferNoVal,
+              transferNoKey
+            ) {
+              if (transferNoVal.number === callVal.to) {
                 transferNoVal.status = "busy";
               }
             });
           });
         }
-      }, function (err) {
+      },
+      function(err) {
         console.log("err", err);
       }
     );
@@ -56,40 +46,42 @@ app.controller("CallListController", function ($scope, $state, $interval, RESTSe
 
   getCallList();
 
-  $interval(function () {
+  $interval(function() {
     getCallList();
   }, 1000);
 
-  $scope.createConference = function (user1, call) {
+  $scope.createConference = function(user1, call) {
     let params = {};
     params.user1 = user1;
 
     params.clientNo = call.to;
     params.clientCallSid = call.sid;
 
-    angular.forEach($scope.calls, function (value, key) {
+    angular.forEach($scope.calls, function(value, key) {
       if (value.sid === call.parentCallSid) {
         params.user2No = value.to;
         params.user2CallSid = value.sid;
 
         RESTService.createConference(params).then(
-          function (response) {
+          function(response) {
             console.log("response", response);
-         }, function (err) {
+          },
+          function(err) {
             console.log("err", err);
           }
         );
       }
     });
-  }
+  };
 
-  $scope.dropCall = function(call){
+  $scope.dropCall = function(call) {
     RESTService.dropCall(call.sid).then(
-      function (response) {
+      function(response) {
         console.log("response", response);
-      }, function (err) {
+      },
+      function(err) {
         console.log("err", err);
       }
     );
-  }
+  };
 });

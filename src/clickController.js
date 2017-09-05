@@ -527,3 +527,65 @@ module.exports.joinClientConference = function (req, res, next) {
     return res.status(200).send({ message: "Ok" });
   }
 }
+
+module.exports.createCallAndJoinConference = function(req, res, next){
+  let conferenceName = req.body.conferenceName;
+  let callNo = req.body.callNo;
+  if(conferenceName === undefined || callNo === undefined){
+    return res.status(405).send({ message: "Missing parameters" });
+  }
+
+  let server = getServer(req);
+  let fullUrl = server + "/Join-Conference?id=" + conferenceName;
+
+  client.calls.create(
+    {
+      url: fullUrl,
+      method: "POST",
+      to: callNo,
+      from: config.twilio.callerId
+    },
+    function (err, call) {
+      if (err) {
+        res.status(405).send(o2x({ message: err }));
+        return;
+      }
+      res.status(200).send({ message: "Thanks for calling!" });
+    }
+  );
+}
+
+module.exports.getUsers = function(req, res, next){
+  const users = [
+    {
+      number: "sip:101@tweb.sip.us1.twilio.com",
+      text:"101",
+      user: "Marcus",
+      status: "free"
+    },
+    {
+      number: "sip:102@tweb.sip.us1.twilio.com",
+      text:"102",
+      user: "Marcelo",
+      status: "free"
+    },
+    {
+      number: "sip:103@tweb.sip.us1.twilio.com",
+      text:"103",
+      user: "Emily",
+      status: "free"
+    },
+    {
+      number: "sip:104@tweb.sip.us1.twilio.com",
+      text:"104",
+      user: "Kate",
+      status: "free"
+    },
+    {
+      number: "sip:105@tweb.sip.us1.twilio.com",
+      text:"105",
+      status: "free"
+    }
+  ];
+  return res.status(200).send({ users: users });
+}

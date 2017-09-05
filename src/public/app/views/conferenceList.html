@@ -15,11 +15,20 @@
         <p><b>Call Sid: </b>{{participant.callSid}}</p>
         <p><b>To: </b>{{participant.to}}</p>
         <md-button class="md-raised md-primary" ng-click="resumeCall(participant.callSid, conference.friendlyName)" 
-          ng-if="participant.to.indexOf('sip:') > -1" >Resume: {{participant.to}}
+          ng-if="participant.to.indexOf('sip:') > -1" >Resume: {{participant.to.substr(4,3)}}
         </md-button>
         <hr/>
       </div>
       </p>
     </md-card-content>
+    <md-card-actions layout="row" layout-align="begin center" layout-padding>
+      <md-label><b>Transfer:</b></md-label>
+      <div ng-repeat="transfer in transferNumbers">
+        <md-button class="md-primary" ng-disabled="transfer.status !== 'free'" 
+          ng-click="joinConference(conference.friendlyName, transfer.number)">
+          {{transfer.text}}
+        </md-button>
+      </div>
+    </md-card-actions>
   </md-card>
 </div>
