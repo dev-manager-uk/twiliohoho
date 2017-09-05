@@ -7,7 +7,8 @@ module.exports = {
     accountSid: process.env.ACCOUNT_SID,
     apiKey: process.env.API_SID,
     apiSecret: process.env.API_SECRET,
-    callerId: process.env.CALLER_ID
+    callerId: process.env.CALLER_ID,
+    sipDomain: process.env.SIP_DOMAIN
   },
   port: process.env.PORT || 3000
 };

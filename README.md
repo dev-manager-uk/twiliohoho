@@ -33,6 +33,7 @@ You will need some credentials and other information from your [Twilio account](
 | API_SID     | The ID of your new API Key from https://www.twilio.com/console/runtime/api-keys |
 | API_SECRET  | The secret for your new API Key from https://www.twilio.com/console/runtime/api-keys |
 | CALLER_ID   | The Twilio phone number Caller ID you would like to use for the application |
+| SIP_DOMAIN  | The SIP Domain you have set up in your Twilio account here https://www.twilio.com/console/voice/sip/endpoints |
 
 ### To deploy to Heroku: ###
 

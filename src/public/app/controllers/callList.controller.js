@@ -1,4 +1,5 @@
 'use strict';
+const config = require('../../../config');
 
 app.controller("CallListController", function ($scope, $state, $interval, RESTService) {
 
@@ -32,7 +33,7 @@ app.controller("CallListController", function ($scope, $state, $interval, RESTSe
 
   $scope.createConference = function (user1, call) {
     let params = {};
-    params.user1 = "sip:" + user1 + "@tweb.sip.us1.twilio.com";
+    params.user1 = "sip:" + user1 + "@" + config.twilio.sipDomain;
 
     params.clientNo = call.to;
     params.clientCallSid = call.sid;
