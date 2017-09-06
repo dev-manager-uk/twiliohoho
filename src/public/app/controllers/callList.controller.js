@@ -33,6 +33,8 @@ app.controller("CallListController", function(
             ) {
               if (transferNoVal.number === callVal.to) {
                 transferNoVal.status = "busy";
+              }else{
+                transferNoVal.status = "free";
               }
             });
           });

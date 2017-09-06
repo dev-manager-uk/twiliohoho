@@ -13,6 +13,8 @@ const colectionStructure = {
   timestamp: ""
 }
 
+const USERS = config.users;
+
 const client = twilio(config.twilio.apiKey, config.twilio.apiSecret, {
   accountSid: config.twilio.accountSid
 });
@@ -327,9 +329,18 @@ function getParticipants(progressConference, cb) {
       getCall(participant.callSid, function (err, result) {
         let part = {
           "callSid": participant.callSid,
-          "to": result.to,
+          "to": result.to
         };
-        progressConference.participants.push(part);
+        let noOfParticipants = progressConference.participants.length;
+        USERS.forEach(function(user){
+          if(user.number === result.to){
+            part.toUserText = user.user;
+            progressConference.participants.push(part);
+          }
+        });
+        if(noOfParticipants === progressConference.participants.length){
+          progressConference.participants.push(part);
+        }
         next();
       });
     }, function (err) {
@@ -428,7 +439,7 @@ module.exports.createConference = function (req, res, next) {
 
     newCollection.clientConferenceName = conferenceName;
 
-    conferenceName = Math.floor(Math.random() * 10000).toString();
+    conferenceName = Math.floor(Math.random() * 10000).toString() + "_Users";
     fullUrl = server + "/Join-Conference?id=" + conferenceName;
 
     newCollection.usersConferenceName = conferenceName;
@@ -556,36 +567,5 @@ module.exports.createCallAndJoinConference = function(req, res, next){
 }
 
 module.exports.getUsers = function(req, res, next){
-  const users = [
-    {
-      number: "sip:101@tweb.sip.us1.twilio.com",
-      text:"101",
-      user: "Marcus",
-      status: "free"
-    },
-    {
-      number: "sip:102@tweb.sip.us1.twilio.com",
-      text:"102",
-      user: "Marcelo",
-      status: "free"
-    },
-    {
-      number: "sip:103@tweb.sip.us1.twilio.com",
-      text:"103",
-      user: "Emily",
-      status: "free"
-    },
-    {
-      number: "sip:104@tweb.sip.us1.twilio.com",
-      text:"104",
-      user: "Kate",
-      status: "free"
-    },
-    {
-      number: "sip:105@tweb.sip.us1.twilio.com",
-      text:"105",
-      status: "free"
-    }
-  ];
-  return res.status(200).send({ users: users });
+  return res.status(200).send({ users: USERS });
 }

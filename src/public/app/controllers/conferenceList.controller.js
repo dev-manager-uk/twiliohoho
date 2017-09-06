@@ -31,6 +31,8 @@ app.controller("ConferenceListController", function(
               angular.forEach($scope.transferNumbers, function(transferNoVal) {
                 if (transferNoVal.number === participant.to) {
                   transferNoVal.status = "busy";
+                }else{
+                  transferNoVal.status = "free";
                 }
               });
             });
