@@ -15,11 +15,13 @@
     </md-card-content>
     <md-card-actions layout="row" layout-align="begin center" layout-padding ng-if="call.parentCallSid">
       <md-label><b>Transfer:</b></md-label>
-      <md-button class="md-primary" ng-click="createConference('101', call)">101</md-button>
-      <md-button class="md-primary" ng-click="createConference('102', call)">102</md-button>
-      <md-button class="md-primary" ng-click="createConference('103', call)">103</md-button>
-      <md-button class="md-primary" ng-click="createConference('104', call)">104</md-button>
-      <md-button class="md-primary" ng-click="createConference('105', call)">105</md-button>
+      <div ng-repeat="transfer in transferNumbers">
+        <md-button class="md-primary" ng-disabled="transfer.status !== 'free'" 
+          ng-click="createConference(transfer.number, call)">
+          <label ng-if="transfer.user">{{transfer.user}}</label>
+          <label ng-if="!transfer.user">{{transfer.text}}</label>
+        </md-button>
+      </div>
     </md-card-actions>
     <md-card-actions layout="row" layout-align="end right" layout-padding>
       <md-button class="md-raised md-warn" ng-click="dropCall(call)">Finish call</md-button>

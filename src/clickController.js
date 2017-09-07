@@ -13,6 +13,8 @@ const colectionStructure = {
   timestamp: ""
 }
 
+const USERS = config.users;
+
 const client = twilio(config.twilio.apiKey, config.twilio.apiSecret, {
   accountSid: config.twilio.accountSid
 });
@@ -327,9 +329,18 @@ function getParticipants(progressConference, cb) {
       getCall(participant.callSid, function (err, result) {
         let part = {
           "callSid": participant.callSid,
-          "to": result.to,
+          "to": result.to
         };
-        progressConference.participants.push(part);
+        let noOfParticipants = progressConference.participants.length;
+        USERS.forEach(function(user){
+          if(user.number === result.to){
+            part.toUserText = user.user;
+            progressConference.participants.push(part);
+          }
+        });
+        if(noOfParticipants === progressConference.participants.length){
+          progressConference.participants.push(part);
+        }
         next();
       });
     }, function (err) {
@@ -428,7 +439,7 @@ module.exports.createConference = function (req, res, next) {
 
     newCollection.clientConferenceName = conferenceName;
 
-    conferenceName = Math.floor(Math.random() * 10000).toString();
+    conferenceName = Math.floor(Math.random() * 10000).toString() + "_Users";
     fullUrl = server + "/Join-Conference?id=" + conferenceName;
 
     newCollection.usersConferenceName = conferenceName;
@@ -526,4 +537,35 @@ module.exports.joinClientConference = function (req, res, next) {
   }else{
     return res.status(200).send({ message: "Ok" });
   }
+}
+
+module.exports.createCallAndJoinConference = function(req, res, next){
+  let conferenceName = req.body.conferenceName;
+  let callNo = req.body.callNo;
+  if(conferenceName === undefined || callNo === undefined){
+    return res.status(405).send({ message: "Missing parameters" });
+  }
+
+  let server = getServer(req);
+  let fullUrl = server + "/Join-Conference?id=" + conferenceName;
+
+  client.calls.create(
+    {
+      url: fullUrl,
+      method: "POST",
+      to: callNo,
+      from: config.twilio.callerId
+    },
+    function (err, call) {
+      if (err) {
+        res.status(405).send(o2x({ message: err }));
+        return;
+      }
+      res.status(200).send({ message: "Thanks for calling!" });
+    }
+  );
+}
+
+module.exports.getUsers = function(req, res, next){
+  return res.status(200).send({ users: USERS });
 }

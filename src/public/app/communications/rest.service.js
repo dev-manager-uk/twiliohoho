@@ -73,4 +73,34 @@ app.service("RESTService", function ($http, $q) {
     });
     return defer.promise;
   }
+
+  this.getUsers = function(){
+    let defer = $q.defer();
+    $http({
+      method: 'GET',
+      url: '/Get-Users',
+    }).then(function (response) {
+      defer.resolve(response);
+    }, function (err) {
+      defer.reject(err);
+    });
+    return defer.promise;
+  }
+
+  this.createCallAndJoinConference = function (conferenceName, callNo) {
+    let defer = $q.defer();
+    $http({
+      method: 'POST',
+      url: '/Create-Call-Join-Conference',
+      data: {
+        "conferenceName": conferenceName,
+        "callNo": callNo
+      }
+    }).then(function (response) {
+      defer.resolve(response);
+    }, function (err) {
+      defer.reject(err);
+    });
+    return defer.promise;
+  }
 });
