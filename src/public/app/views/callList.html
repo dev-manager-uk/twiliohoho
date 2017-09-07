@@ -17,7 +17,7 @@
       <md-label><b>Transfer:</b></md-label>
       <div ng-repeat="transfer in transferNumbers">
         <md-button class="md-primary" ng-disabled="transfer.status !== 'free'" 
-          ng-click="createConference(transfer.number, call)">
+          ng-click="createConference(transfer.number, call)" aria-label="transferButton">
           <label ng-if="transfer.user">{{transfer.user}}</label>
           <label ng-if="!transfer.user">{{transfer.text}}</label>
         </md-button>
