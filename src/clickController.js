@@ -449,7 +449,7 @@ module.exports.createConference = function (req, res, next) {
       {
         url: fullUrl,
         method: "POST",
-        to: "sip:" + user1 + "@" + config.twilio.sipDomain,
+        to: user1,
         from: config.twilio.callerId
       },
       function (err, call) {
