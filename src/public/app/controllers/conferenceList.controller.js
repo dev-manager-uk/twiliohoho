@@ -26,13 +26,14 @@ app.controller("ConferenceListController", function(
         if ($scope.conferences.length === 0) {
           $scope.msg = "There is no conference in progress";
         } else {
+          angular.forEach($scope.transferNumbers, function(transferNoVal){
+            transferNoVal.status = "free";
+          });
           angular.forEach($scope.conferences, function(confVal, confKey) {
             angular.forEach(confVal.participants, function(participant){
-              angular.forEach($scope.transferNumbers, function(transferNoVal) {
+              angular.forEach($scope.transferNumbers, function(transferNoVal, transferNoIndex) {
                 if (transferNoVal.number === participant.to) {
                   transferNoVal.status = "busy";
-                }else{
-                  transferNoVal.status = "free";
                 }
               });
             });

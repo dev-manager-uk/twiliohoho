@@ -26,6 +26,9 @@ app.controller("CallListController", function(
         if ($scope.calls.length === 0) {
           $scope.msg = "There is no call in progress";
         } else {
+          angular.forEach($scope.transferNumbers, function(transferNoVal){
+            transferNoVal.status = "free";
+          });
           angular.forEach($scope.calls, function(callVal, callKey) {
             angular.forEach($scope.transferNumbers, function(
               transferNoVal,
@@ -33,8 +36,6 @@ app.controller("CallListController", function(
             ) {
               if (transferNoVal.number === callVal.to) {
                 transferNoVal.status = "busy";
-              }else{
-                transferNoVal.status = "free";
               }
             });
           });
