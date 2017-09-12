@@ -140,21 +140,16 @@ module.exports.outboundCallPOST = function (req, res, next) {
         .send(o2x({ message: "Error to calculate this number" }));
     }
     res.contentType("application/xml");
-    res.status(200).send(
-      o2x({
-        '?xml version="1.0" encoding="utf-8"?': null,
-        Response: {
-          Dial: {
-            "@": {
-              callerId: config.twilio.callerId
-            },
-            "#": {
-              Number: returnedNumber
-            }
-          }
-        }
-      })
-    );
+    const twimlResponse = new VoiceResponse();
+    const dial = twimlResponse.dial({ callerId: config.twilio.callerId });
+    dial.number({}, returnedNumber);
+
+    // We include a second Dial here. When the original Dial ends because the
+    // customer is redirected, the user continues to this Dial and joins their
+    // own conference.
+    const confDial = twimlResponse.dial({});
+    confDial.conference({}, req.body.CallSid + "_Users");
+    res.status(200).send(twimlResponse.toString());
   });
 };
 
@@ -388,9 +383,6 @@ module.exports.conferenceList = function (req, res, next) {
 };
 
 module.exports.createConference = function (req, res, next) {
-  // conference name will be a random number between 0 and 10000
-  let conferenceName = Math.floor(Math.random() * 10000).toString();
-
   let user1;
   let user2No;
   let user2CallSid;
@@ -426,6 +418,8 @@ module.exports.createConference = function (req, res, next) {
   let newCollection = colectionStructure;
 
   let server = getServer(req);
+  // conference name will be the parent call SID
+  let conferenceName = user2CallSid;
   let fullUrl = server + "/Join-Conference?id=" + conferenceName;
 
   client.calls(clientCallSid).update({
@@ -439,7 +433,7 @@ module.exports.createConference = function (req, res, next) {
 
     newCollection.clientConferenceName = conferenceName;
 
-    conferenceName = Math.floor(Math.random() * 10000).toString() + "_Users";
+    conferenceName = user2CallSid + "_Users";
     fullUrl = server + "/Join-Conference?id=" + conferenceName;
 
     newCollection.usersConferenceName = conferenceName;
@@ -457,22 +451,8 @@ module.exports.createConference = function (req, res, next) {
           res.status(405).send({ message: err });
           return;
         }
-        client.calls.create(
-          {
-            url: fullUrl,
-            method: "POST",
-            to: user2No,
-            from: config.twilio.callerId
-          },
-          function (err, call) {
-            if (err) {
-              res.status(405).send({ message: err });
-              return;
-            }
-            databaseInMemory.push(newCollection);
-            return res.status(200).send({ message: "Conferences created" });
-          }
-        );
+        databaseInMemory.push(newCollection);
+        return res.status(200).send({ message: "Conferences created" });
       }
     );
   });
