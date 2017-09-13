@@ -2,7 +2,7 @@
     <h2>User List</h2>
   </div>
 <div ng-repeat="user in users">
-  <md-card ng-class="{busyUser : user.user, freeUser : !user.user}">
+  <md-card ng-class="{busyUser : user.status != 'free', freeUser : user.status == 'free'}">
     <md-card-content>
       <p ng-if="user.user"><b>Name: </b>{{user.user}}</p>
       <p ng-if="!user.user"><b>Name: </b>{{user.text}}</p>
