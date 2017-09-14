@@ -4,7 +4,7 @@
 <div class="alert alert-info" ng-if="msg">
   {{msg}}
 </div>
-<div ng-repeat="conference in conferences | orderBy: '-dateCreated'" ng-if="!msg">
+<div ng-repeat="conference in conferences | orderBy: 'sid'" ng-if="!msg">
   <md-card>
     <md-card-content>
       <p><b>Sid: </b>{{conference.sid}}</p>
