@@ -1,29 +1,40 @@
 "use strict";
-const config = require('./config');
+//NPM dependencies
 const async = require('async');
 const o2x = require("object-to-xml");
 const twilio = require("twilio");
-const VoiceResponse = twilio.twiml.VoiceResponse;
+
+//Project dependencies
+const config = require('./config');
 const phoneComponent = require("./phoneComponent");
 
+const VoiceResponse = twilio.twiml.VoiceResponse;
+
+//Cache database in order to keep in memory last conferences
 let databaseInMemory = [];
+
+//Collection model
 const colectionStructure = {
   clientConferenceName: "",
   usersConferenceName: "",
   timestamp: ""
 }
 
+//List of users stored in the config file
 const USERS = config.users;
 
+//Create authenticated instance of the twilio lib
 const client = twilio(config.twilio.apiKey, config.twilio.apiSecret, {
   accountSid: config.twilio.accountSid
 });
 
+//Function to get server URL
 function getServer(req) {
   let server = req.protocol + "://" + req.get("host");
   return server;
 }
 
+//endpoint to parse called number and create call to user
 module.exports.formatPhoneNumberPerUserPOST = function (req, res, next) {
   if (
     config.twilio.apiKey === undefined ||
@@ -106,6 +117,7 @@ module.exports.formatPhoneNumberPerUserPOST = function (req, res, next) {
   });
 };
 
+//This endpoint returns a Twiml in order to call called number
 module.exports.outboundCallPOST = function (req, res, next) {
   let called;
 
@@ -153,6 +165,7 @@ module.exports.outboundCallPOST = function (req, res, next) {
   });
 };
 
+//This endpoint returns a Twiml in order to call called number
 module.exports.outboundCallGET = function (req, res, next) {
   // res.contentType('application/xml');
   // res.sendFile(__dirname + '/public/resp.xml');
@@ -210,6 +223,7 @@ module.exports.outboundCallGET = function (req, res, next) {
   });
 };
 
+//This endpoint parses called number and returns a Twiml in order to call called number
 module.exports.clickClient = function (req, res, next) {
   let called;
 
@@ -262,6 +276,7 @@ module.exports.clickClient = function (req, res, next) {
   });
 };
 
+//This endpoint finish call according to callSid
 module.exports.dropCall = function (req, res, next) {
   let callSid = req.body.callSid;
   if (callSid === undefined) {
@@ -280,6 +295,7 @@ module.exports.dropCall = function (req, res, next) {
     })
 }
 
+//This endpoint returns a list of calls in progress - JSON
 module.exports.callList = function (req, res, next) {
   client.calls.list(
     {
@@ -305,6 +321,7 @@ module.exports.callList = function (req, res, next) {
   );
 };
 
+//This function retrieve specific call according to callSid
 function getCall(callSid, cb) {
   client
     .calls(callSid)
@@ -317,10 +334,14 @@ function getCall(callSid, cb) {
     });
 }
 
+//This function get all participantes of a conference
 function getParticipants(progressConference, cb) {
   let conf = client.conferences(progressConference.sid);
+  //Retrieve participants list
   conf.participants.list({}, function (err, data) {
+    //for in participantes of a conference
     async.each(data, function (participant, next) {
+      //comparte participant call with user list
       getCall(participant.callSid, function (err, result) {
         let part = {
           "callSid": participant.callSid,
@@ -344,6 +365,7 @@ function getParticipants(progressConference, cb) {
   });
 }
 
+//This endpoint retrieves a list of conferences
 module.exports.conferenceList = function (req, res, next) {
   client.conferences.list(
     {
@@ -361,6 +383,7 @@ module.exports.conferenceList = function (req, res, next) {
 
       let arrayOfConferences = [];
 
+      //retrieve list of participants
       async.each(data, function (conference, next) {
         let progressConference = {
           "participants": []
@@ -519,6 +542,7 @@ module.exports.joinClientConference = function (req, res, next) {
   }
 }
 
+//this endpoint creates a call and join it to a conference
 module.exports.createCallAndJoinConference = function(req, res, next){
   let conferenceName = req.body.conferenceName;
   let callNo = req.body.callNo;
@@ -546,6 +570,7 @@ module.exports.createCallAndJoinConference = function(req, res, next){
   );
 }
 
+//This endpoint retrives a list of users
 module.exports.getUsers = function(req, res, next){
   return res.status(200).send({ users: USERS });
 }
