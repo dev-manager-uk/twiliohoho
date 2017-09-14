@@ -51,7 +51,7 @@ app.controller("CallListController", function(
 
   $interval(function() {
     getCallList();
-  }, 1000);
+  }, 2000);
 
   $scope.createConference = function(user1, call) {
     let params = {};

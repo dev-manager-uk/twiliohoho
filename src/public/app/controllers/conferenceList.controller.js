@@ -50,7 +50,7 @@ app.controller("ConferenceListController", function(
 
   $interval(function() {
     getConferenceList();
-  }, 1000);
+  }, 2000);
 
   $scope.resumeCall = function(callSid, conferenceName) {
     RESTService.resumeCall(callSid, conferenceName).then(

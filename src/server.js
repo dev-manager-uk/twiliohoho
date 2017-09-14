@@ -10,6 +10,7 @@ app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
+//Create routes
 routes.generateRoutes(app);
 
 var server = app.listen(config.port || 3000, function () {
