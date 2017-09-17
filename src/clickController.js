@@ -1,11 +1,11 @@
 "use strict";
 //NPM dependencies
-const async = require('async');
+const async = require("async");
 const o2x = require("object-to-xml");
 const twilio = require("twilio");
 
 //Project dependencies
-const config = require('./config');
+const config = require("./config");
 const phoneComponent = require("./phoneComponent");
 
 const VoiceResponse = twilio.twiml.VoiceResponse;
@@ -18,7 +18,7 @@ const colectionStructure = {
   clientConferenceName: "",
   usersConferenceName: "",
   timestamp: ""
-}
+};
 
 //List of users stored in the config file
 const USERS = config.users;
@@ -35,7 +35,7 @@ function getServer(req) {
 }
 
 //endpoint to parse called number and create call to user
-module.exports.formatPhoneNumberPerUserPOST = function (req, res, next) {
+module.exports.formatPhoneNumberPerUserPOST = function(req, res, next) {
   if (
     config.twilio.apiKey === undefined ||
     config.twilio.apiSecret === undefined ||
@@ -89,7 +89,7 @@ module.exports.formatPhoneNumberPerUserPOST = function (req, res, next) {
     called = called.substring(called.indexOf("%3A") + 2, called.indexOf("%40"));
   }
 
-  phoneComponent.formatPhoneNumber(called, function (err, returnedNumber) {
+  phoneComponent.formatPhoneNumber(called, function(err, returnedNumber) {
     if (err) {
       return res
         .status(405)
@@ -106,7 +106,7 @@ module.exports.formatPhoneNumberPerUserPOST = function (req, res, next) {
         to: userCall,
         from: config.twilio.callerId
       },
-      function (err, call) {
+      function(err, call) {
         if (err) {
           res.status(405).send(o2x({ message: err }));
           return;
@@ -118,7 +118,7 @@ module.exports.formatPhoneNumberPerUserPOST = function (req, res, next) {
 };
 
 //This endpoint returns a Twiml in order to call called number
-module.exports.outboundCallPOST = function (req, res, next) {
+module.exports.outboundCallPOST = function(req, res, next) {
   let called;
 
   if (req.body.number !== undefined) {
@@ -145,7 +145,7 @@ module.exports.outboundCallPOST = function (req, res, next) {
     called = called.substring(called.indexOf("%3A") + 2, called.indexOf("%40"));
   }
 
-  phoneComponent.formatPhoneNumber(called, function (err, returnedNumber) {
+  phoneComponent.formatPhoneNumber(called, function(err, returnedNumber) {
     if (err) {
       return res
         .status(405)
@@ -166,7 +166,7 @@ module.exports.outboundCallPOST = function (req, res, next) {
 };
 
 //This endpoint returns a Twiml in order to call called number
-module.exports.outboundCallGET = function (req, res, next) {
+module.exports.outboundCallGET = function(req, res, next) {
   // res.contentType('application/xml');
   // res.sendFile(__dirname + '/public/resp.xml');
   // return;
@@ -193,7 +193,7 @@ module.exports.outboundCallGET = function (req, res, next) {
     called = called.substring(called.indexOf("%3A") + 2, called.indexOf("%40"));
   }
 
-  phoneComponent.formatPhoneNumber(called, function (err, returnedNumber) {
+  phoneComponent.formatPhoneNumber(called, function(err, returnedNumber) {
     if (err) {
       return res
         .status(405)
@@ -224,7 +224,7 @@ module.exports.outboundCallGET = function (req, res, next) {
 };
 
 //This endpoint parses called number and returns a Twiml in order to call called number
-module.exports.clickClient = function (req, res, next) {
+module.exports.clickClient = function(req, res, next) {
   let called;
 
   if (req.body.called !== undefined) {
@@ -253,7 +253,7 @@ module.exports.clickClient = function (req, res, next) {
     called = called.substring(called.indexOf("%3A") + 2, called.indexOf("%40"));
   }
 
-  phoneComponent.formatPhoneNumber(called, function (err, returnedNumber) {
+  phoneComponent.formatPhoneNumber(called, function(err, returnedNumber) {
     if (err) {
       res.status(405).send(o2x({ message: "Error to calculate this number" }));
       return;
@@ -277,32 +277,29 @@ module.exports.clickClient = function (req, res, next) {
 };
 
 //This endpoint finish call according to callSid
-module.exports.dropCall = function (req, res, next) {
+module.exports.dropCall = function(req, res, next) {
   let callSid = req.body.callSid;
   if (callSid === undefined) {
-    return res
-      .status(405)
-      .send({ message: "There is no callSid" });
+    return res.status(405).send({ message: "There is no callSid" });
   }
-  client.calls(callSid)
-    .update({
-      status: 'completed',
-    }, function (err, call) {
-      if (err) {
-        return res.status(500).send(err);
-      }
-      res.status(200).send({ "message": "success" });
-    })
-}
+  client.calls(callSid).update({
+    status: "completed"
+  }, function(err, call) {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.status(200).send({ message: "success" });
+  });
+};
 
 //This endpoint returns a list of calls in progress - JSON
-module.exports.callList = function (req, res, next) {
+module.exports.callList = function(req, res, next) {
   client.calls.list(
     {
       status: "in-progress"
       // status: "completed"
     },
-    function (err, data) {
+    function(err, data) {
       if (err) {
         return res.status(500).send(err);
       }
@@ -338,74 +335,82 @@ function getCall(callSid, cb) {
 function getParticipants(progressConference, cb) {
   let conf = client.conferences(progressConference.sid);
   //Retrieve participants list
-  conf.participants.list({}, function (err, data) {
+  conf.participants.list({}, function(err, data) {
     //for in participantes of a conference
-    async.each(data, function (participant, next) {
-      //comparte participant call with user list
-      getCall(participant.callSid, function (err, result) {
-        let part = {
-          "callSid": participant.callSid,
-          "to": result.to
-        };
-        let noOfParticipants = progressConference.participants.length;
-        USERS.forEach(function(user){
-          if(user.number === result.to){
-            part.toUserText = user.user;
+    async.each(
+      data,
+      function(participant, next) {
+        //comparte participant call with user list
+        getCall(participant.callSid, function(err, result) {
+          let part = {
+            callSid: participant.callSid,
+            to: result.to
+          };
+          let noOfParticipants = progressConference.participants.length;
+          USERS.forEach(function(user) {
+            if (user.number === result.to) {
+              part.toUserText = user.user;
+              progressConference.participants.push(part);
+            }
+          });
+          if (noOfParticipants === progressConference.participants.length) {
             progressConference.participants.push(part);
           }
+          next();
         });
-        if(noOfParticipants === progressConference.participants.length){
-          progressConference.participants.push(part);
-        }
-        next();
-      });
-    }, function (err) {
-      return cb(null, progressConference);
-    });
+      },
+      function(err) {
+        return cb(null, progressConference);
+      }
+    );
   });
 }
 
 //This endpoint retrieves a list of conferences
-module.exports.conferenceList = function (req, res, next) {
+module.exports.conferenceList = function(req, res, next) {
   client.conferences.list(
     {
-      status: "in-progress",
+      status: "in-progress"
       // status: "completed"
     },
-    function (err, data) {
+    function(err, data) {
       if (err) {
         return res.status(500).send(err);
       }
 
-      if(data.length < 1 && databaseInMemory.length >= 1){
+      if (data.length < 1 && databaseInMemory.length >= 1) {
         databaseInMemory = [];
       }
 
       let arrayOfConferences = [];
 
       //retrieve list of participants
-      async.each(data, function (conference, next) {
-        let progressConference = {
-          "participants": []
-        };
-        progressConference.sid = conference.sid;
-        progressConference.friendlyName = conference.friendlyName;
-        progressConference.dateCreated = conference.dateCreated;
-        getParticipants(progressConference, function (err, result) {
-          if (err) {
-            return next();
-          }
-          arrayOfConferences.push(result);
-          next();
-        });
-      }, function (err) {
-        res.status(200).send(arrayOfConferences);
-      });
+      async.each(
+        data,
+        function(conference, next) {
+          let progressConference = {
+            participants: []
+          };
+          progressConference.sid = conference.sid;
+          progressConference.friendlyName = conference.friendlyName;
+          progressConference.dateCreated = conference.dateCreated;
+          getParticipants(progressConference, function(err, result) {
+            if (err) {
+              return next();
+            }
+            arrayOfConferences.push(result);
+            next();
+          });
+        },
+        function(err) {
+          res.status(200).send(arrayOfConferences);
+        }
+      );
     }
   );
 };
 
-module.exports.createConference = function (req, res, next) {
+module.exports.createConference = function(req, res, next) {
   let user1;
   let user2No;
   let user2CallSid;
@@ -444,11 +449,11 @@ module.exports.createConference = function (req, res, next) {
   // conference name will be the parent call SID
   let conferenceName = user2CallSid;
   let fullUrl = server + "/Join-Conference?id=" + conferenceName;
-
+  let onHoldConfereneName = conferenceName;
   client.calls(clientCallSid).update({
     url: fullUrl,
     method: "POST"
-  }, function (err, call) {
+  }, function(err, call) {
     if (err) {
       res.status(405).send({ message: err });
       return;
@@ -469,20 +474,55 @@ module.exports.createConference = function (req, res, next) {
         to: user1,
         from: config.twilio.callerId
       },
-      function (err, call) {
+      function(err, call) {
         if (err) {
           res.status(405).send({ message: err });
           return;
         }
         databaseInMemory.push(newCollection);
+        setOnHold(onHoldConfereneName);
         return res.status(200).send({ message: "Conferences created" });
       }
     );
   });
 };
 
+function setOnHold(confName) {
+  client.conferences.list(
+    {
+      status: "in-progress"
+    },
+    function(err, data) {
+      if (err) {
+        return;
+      }
+      data.forEach(function(element) {
+        if (element.friendlyName == confName) {
+          let confSid = element.sid;
+          let conf = client.conferences(confSid);
+          //Retrieve participants list
+          conf.participants.list({}, function(err, partData) {
+            partData.forEach(function(participant) {
+              let callSid = participant.callSid;
+              client
+                .conferences(confSid)
+                .participants(callSid)
+                .update({
+                  hold: "true",
+                  holdUrl:
+                    "http://twimlets.com/holdmusic?Bucket=com.twilio.music.classical&amp;Message=please%20wait"
+                })
+                .then();
+            });
+          });
+        }
+      }, this);
+    }
+  );
+}
+
 // This is the endpoint that Twilio will call when you answer the phone
-module.exports.joinConference = function (req, res, next) {
+module.exports.joinConference = function(req, res, next) {
   // res.contentType('application/xml');
   // res.sendFile(__dirname + '/public/resp.xml');
   // return;
@@ -502,7 +542,7 @@ module.exports.joinConference = function (req, res, next) {
   res.send(twiml.toString());
 };
 
-module.exports.joinClientConference = function (req, res, next) {
+module.exports.joinClientConference = function(req, res, next) {
   let callSid = req.body.callSid;
   let conferenceName = req.body.conferenceName;
 
@@ -516,7 +556,7 @@ module.exports.joinClientConference = function (req, res, next) {
     err: ""
   };
 
-  databaseInMemory.forEach(function (doc) {
+  databaseInMemory.forEach(function(doc) {
     if (doc.usersConferenceName === conferenceName && !isCallFound) {
       isCallFound = true;
 
@@ -526,7 +566,7 @@ module.exports.joinClientConference = function (req, res, next) {
       client.calls(callSid).update({
         url: fullUrl,
         method: "POST"
-      }, function (err, call) {
+      }, function(err, call) {
         if (err) {
           error.hasError = true;
           error.err = err;
@@ -535,18 +575,18 @@ module.exports.joinClientConference = function (req, res, next) {
     }
   });
 
-  if(error.hasError){
+  if (error.hasError) {
     return res.status(405).send({ message: error.err });
-  }else{
+  } else {
     return res.status(200).send({ message: "Ok" });
   }
-}
+};
 
 //this endpoint creates a call and join it to a conference
-module.exports.createCallAndJoinConference = function(req, res, next){
+module.exports.createCallAndJoinConference = function(req, res, next) {
   let conferenceName = req.body.conferenceName;
   let callNo = req.body.callNo;
-  if(conferenceName === undefined || callNo === undefined){
+  if (conferenceName === undefined || callNo === undefined) {
     return res.status(405).send({ message: "Missing parameters" });
   }
 
@@ -560,7 +600,7 @@ module.exports.createCallAndJoinConference = function(req, res, next){
       to: callNo,
       from: config.twilio.callerId
     },
-    function (err, call) {
+    function(err, call) {
       if (err) {
         res.status(405).send(o2x({ message: err }));
         return;
@@ -568,9 +608,9 @@ module.exports.createCallAndJoinConference = function(req, res, next){
       res.status(200).send({ message: "Thanks for calling!" });
     }
   );
-}
+};
 
 //This endpoint retrives a list of users
-module.exports.getUsers = function(req, res, next){
+module.exports.getUsers = function(req, res, next) {
   return res.status(200).send({ users: USERS });
-}
+};
