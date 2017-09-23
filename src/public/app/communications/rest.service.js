@@ -57,15 +57,12 @@ app.service("RESTService", function ($http, $q) {
     return defer.promise;
   }
 
-  this.resumeCall = function (callSid, conferenceName) {
+  this.resumeCall = function (data) {
     let defer = $q.defer();
     $http({
       method: 'POST',
       url: '/Join-Client-Conference',
-      data: {
-        "callSid": callSid,
-        "conferenceName": conferenceName
-      }
+      data: data
     }).then(function (response) {
       defer.resolve(response);
     }, function (err) {
@@ -87,15 +84,12 @@ app.service("RESTService", function ($http, $q) {
     return defer.promise;
   }
 
-  this.createCallAndJoinConference = function (conferenceName, callNo) {
+  this.createCallAndJoinConference = function (data) {
     let defer = $q.defer();
     $http({
       method: 'POST',
       url: '/Create-Call-Join-Conference',
-      data: {
-        "conferenceName": conferenceName,
-        "callNo": callNo
-      }
+      data: data
     }).then(function (response) {
       defer.resolve(response);
     }, function (err) {

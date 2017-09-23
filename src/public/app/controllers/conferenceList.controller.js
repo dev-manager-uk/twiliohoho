@@ -52,8 +52,13 @@ app.controller("ConferenceListController", function(
     getConferenceList();
   }, 2000);
 
-  $scope.resumeCall = function(callSid, conferenceName) {
-    RESTService.resumeCall(callSid, conferenceName).then(
+  $scope.resumeCall = function(callSid, conference) {
+    let data = {
+      "callSid": callSid,
+      "conferenceName": conference.friendlyName,
+      "conferenceSid": conference.sid
+    }
+    RESTService.resumeCall(data).then(
       function(response) {
         console.log("response", response);
       },
@@ -63,8 +68,13 @@ app.controller("ConferenceListController", function(
     );
   };
 
-  $scope.joinConference = function(conferenceName, callNo){
-    RESTService.createCallAndJoinConference(conferenceName, callNo).then(
+  $scope.joinConference = function(conference, callNo){
+    let data = {
+      "conferenceSid": conference.sid,
+      "conferenceName": conference.friendlyName,
+      "callNo": callNo
+    }
+    RESTService.createCallAndJoinConference(data).then(
       function(response) {
         console.log("response", response);
       },

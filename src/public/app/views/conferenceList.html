@@ -14,7 +14,7 @@
       <div ng-repeat="participant in conference.participants | orderBy: '-callSid'" style="margin-left: 2vw">
         <p><b>Call Sid: </b>{{participant.callSid}}</p>
         <p><b>To: </b>{{participant.to}}</p>
-        <md-button class="md-raised md-primary" ng-click="resumeCall(participant.callSid, conference.friendlyName)" 
+        <md-button class="md-raised md-primary" ng-click="resumeCall(participant.callSid, conference)" 
           ng-if="participant.to.indexOf('sip:') > -1 && conference.friendlyName.indexOf('_User') > -1"  aria-label="ResumeButton">
           <label ng-if="participant.toUserText">Resume: {{participant.toUserText}}</label>
           <label ng-if="!participant.toUserText">Resume: {{participant.to.substr(4,3)}}</label>
@@ -27,7 +27,7 @@
       <md-label><b>Transfer:</b></md-label>
       <div ng-repeat="transfer in transferNumbers">
         <md-button class="md-primary ng-cloak" ng-disabled="transfer.status !== 'free'" 
-          ng-click="joinConference(conference.friendlyName, transfer.number)" aria-label="transferButton">
+          ng-click="joinConference(conference, transfer.number)" aria-label="transferButton">
           <label ng-if="transfer.user">{{transfer.user}}</label>
           <label ng-if="!transfer.user">{{transfer.text}}</label>
         </md-button>

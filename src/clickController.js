@@ -379,7 +379,12 @@ module.exports.conferenceList = function(req, res, next) {
       }
 
       if (data.length < 1 && databaseInMemory.length >= 1) {
-        databaseInMemory = [];
+        databaseInMemory.forEach(function(data, index){
+          let currentTime = Math.floor(Date.now() / 1000) + 1800;
+          if(data.timestamp < currentTime){
+            databaseInMemory.splice(index, 1);
+          }
+        });
       }
 
       let arrayOfConferences = [];
@@ -545,6 +550,7 @@ module.exports.joinConference = function(req, res, next) {
 module.exports.joinClientConference = function(req, res, next) {
   let callSid = req.body.callSid;
   let conferenceName = req.body.conferenceName;
+  let previousConferenceSid = req.body.conferenceSid;
 
   if (callSid === undefined || conferenceName === undefined) {
     return res.status(405).send({ message: "Missing parameters" });
@@ -571,6 +577,29 @@ module.exports.joinClientConference = function(req, res, next) {
           error.hasError = true;
           error.err = err;
         }
+        client
+        .conferences(previousConferenceSid)
+        .fetch()
+        .then(function(conf) {
+          let progressConference = {
+            participants: []
+          };
+          progressConference.sid = conf.sid;
+          progressConference.friendlyName = conf.friendlyName;
+          progressConference.dateCreated = conf.dateCreated;
+          getParticipants(progressConference, function(err, data) {
+            data.participants.forEach(function(participant){
+              client.calls(participant.callSid).update({
+                status: "completed"
+              }, function(err, call) {
+                if (err) {
+                  res.status(405).send({ message: err });
+                  return;
+                }
+              });
+            });
+          });
+        });
       });
     }
   });
@@ -584,30 +613,105 @@ module.exports.joinClientConference = function(req, res, next) {
 
 //this endpoint creates a call and join it to a conference
 module.exports.createCallAndJoinConference = function(req, res, next) {
+  let conferenceSid = req.body.conferenceSid;
   let conferenceName = req.body.conferenceName;
   let callNo = req.body.callNo;
-  if (conferenceName === undefined || callNo === undefined) {
+  if (
+    conferenceSid === undefined ||
+    conferenceName === undefined ||
+    callNo === undefined
+  ) {
     return res.status(405).send({ message: "Missing parameters" });
   }
 
   let server = getServer(req);
   let fullUrl = server + "/Join-Conference?id=" + conferenceName;
 
-  client.calls.create(
-    {
-      url: fullUrl,
-      method: "POST",
-      to: callNo,
-      from: config.twilio.callerId
-    },
-    function(err, call) {
-      if (err) {
-        res.status(405).send(o2x({ message: err }));
-        return;
+  if (conferenceName.indexOf("_Users") > -1) {
+    client.calls.create(
+      {
+        url: fullUrl,
+        method: "POST",
+        to: callNo,
+        from: config.twilio.callerId
+      },
+      function(err, call) {
+        if (err) {
+          res.status(405).send(o2x({ message: err }));
+          return;
+        }
+        res.status(200).send({ message: "Thanks for calling!" });
       }
-      res.status(200).send({ message: "Thanks for calling!" });
-    }
-  );
+    );
+  } else {
+    let newConferenceName;
+    let newConferenceNameUser;
+    let server = getServer(req);
+    let fullUrl = server + "/Join-Conference?id=";
+    let fullUrlUser = server + "/Join-Conference?id=";
+    let currentUrl;
+    client
+      .conferences(conferenceSid)
+      .fetch()
+      .then(function(conf) {
+        let progressConference = {
+          participants: []
+        };
+        progressConference.sid = conf.sid;
+        progressConference.friendlyName = conf.friendlyName;
+        progressConference.dateCreated = conf.dateCreated;
+        getParticipants(progressConference, function(err, data) {
+          if (err) {
+            return res.status(500).send({ message: "Try Again" });
+          }
+          data.participants.forEach(function(participant){
+            if(participant.to.indexOf(config.twilio.sipDomain) > -1){
+              if(newConferenceNameUser === undefined){
+                newConferenceNameUser = participant.callSid + "_Users";
+                fullUrlUser += newConferenceNameUser;
+              }
+              currentUrl = fullUrlUser;
+            }
+            else{
+              if(newConferenceName === undefined){
+                newConferenceName = participant.callSid;
+                fullUrl += newConferenceName;
+              }
+              currentUrl = fullUrl;
+            }
+            client.calls(participant.callSid).update({
+              url: currentUrl,
+              method: "POST"
+            }, function(err, call) {
+              if (err) {
+                res.status(405).send({ message: err });
+                return;
+              }
+            });
+          });
+          let newCollection = colectionStructure;
+          newCollection.clientConferenceName = newConferenceName;
+          newCollection.usersConferenceName = newConferenceNameUser;
+          newCollection.timestamp = Date.now();
+          databaseInMemory.push(newCollection);
+          client.calls.create(
+            {
+              url: fullUrlUser,
+              method: "POST",
+              to: callNo,
+              from: config.twilio.callerId
+            },
+            function(err, call) {
+              if (err) {
+                res.status(405).send(o2x({ message: err }));
+                return;
+              }
+              res.status(200).send({ message: "Thanks for calling!" });
+            }
+          );
+        });
+      });
+  }
 };
 
 //This endpoint retrives a list of users
