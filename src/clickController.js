@@ -535,7 +535,7 @@ module.exports.joinConference = function(req, res, next) {
 
   dial.conference(conferenceName, {
     startConferenceOnEnter: true,
-    endConferenceOnExit: true
+    endConferenceOnExit: false
   });
   res.contentType("application/xml");
   res.set("Content-Type", "text/xml");
