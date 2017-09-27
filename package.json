@@ -11,8 +11,8 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "engines" : {
-    "node" : "6.11.x"
+  "engines": {
+    "node": "6.11.x"
   },
   "dependencies": {
     "async": "^2.5.0",
@@ -21,7 +21,8 @@
     "express": "^4.14.0",
     "google-libphonenumber": "^3.0.0",
     "object-to-xml": "^1.1.0",
-    "twilio": "^3.6.2"
+    "twilio": "^3.6.2",
+    "xml-writer": "^1.7.0"
   },
   "devDependencies": {
     "dotenv": "^4.0.0"

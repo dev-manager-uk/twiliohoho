@@ -21,7 +21,13 @@ const colectionStructure = {
 };
 
 //List of users stored in the config file
-const USERS = config.users;
+const USERS = [];
+
+config.users.forEach(function(user){
+  user.text = user.number;
+  user.number = "sip:" + user.number + "@" + config.twilio.sipDomain;
+  USERS.push(user);
+})
 
 //Create authenticated instance of the twilio lib
 const client = twilio(config.twilio.apiKey, config.twilio.apiSecret, {

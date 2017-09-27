@@ -12,28 +12,23 @@ module.exports = {
   },
   users: [
     {
-      number: "sip:1001@tweb.sip.us1.twilio.com",
-      text:"1001",
+      number:"1001",
       user: "Marcus 1"
     },
     {
-      number: "sip:1002@tweb.sip.us1.twilio.com",
-      text:"1002",
+      number:"1002",
       user: "Marcus 2"
     },
     {
-      number: "sip:1003@tweb.sip.us1.twilio.com",
-      text:"1003",
+      number:"1003",
       user: "Marcelo 3"
     },
     {
-      number: "sip:1004@tweb.sip.us1.twilio.com",
-      text:"1004",
+      number:"1004",
       user: "Marcelo 4"
     },
     {
-      number: "sip:1005@tweb.sip.us1.twilio.com",
-      text:"1005"
+      number:"1005"
     }
   ],
   port: process.env.PORT || 3000
