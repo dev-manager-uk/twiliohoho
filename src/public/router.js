@@ -13,7 +13,7 @@ app
 		}
 	})
 	.state('home',{
-    url: '/',
+    url: '/:user',
 		views: {
 	  	'main': {
 				templateUrl: 'app/views/home.html',

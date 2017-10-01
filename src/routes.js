@@ -11,6 +11,9 @@ module.exports.generateRoutes = function (app) {
   app.post('/Click-Dial', clickController.outboundCallPOST);
   app.get('/Click-Dial', clickController.outboundCallGET);
 
+  app.post('/Click-Between-Clients', clickController.clickBetweenClients);
+  app.post('/Connect-Users', clickController.connectUsers);
+
   app.get('/Call-List', clickController.callList);
   app.get('/Conference-List', clickController.conferenceList);
 

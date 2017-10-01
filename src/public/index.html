@@ -8,25 +8,55 @@
   <base href="/">
 
   <style>
-    .statusBall{
-      border-radius: 25px;
-      width: 10px;
-      height: 10px;
+    .statusBall {
+      border-radius: 50%;
+      width: 12px;
+      height: 12px;
       background-color: #000;
       margin-top: 5px;
       float: left;
     }
 
-    .statusText{
-      margin-left: 2vw;
+    .border {
+      border: 2px solid #000;
     }
 
-    .busyUser{
-      background-color: #B00011; color: #ffffff;
+    .statusText {
+      margin-left: 1vw;
+      display: inline-block;
+      font-size: 16px;
     }
 
-    .freeUser{
-      background-color: #55AA55; color: #ffffff;
+    .busyUser {
+      background-color: #B00011;
+      color: #ffffff;
+    }
+
+    .freeUser {
+      background-color: #55AA55;
+      color: #ffffff;
+    }
+
+    .tooltip-container {
+      position: relative;
+    }
+
+    .tooltip-container .tooltiptext {
+      visibility: hidden;
+      width: 120px;
+      background-color: black;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px 0;
+
+      /* Position the tooltip */
+      position: absolute;
+      z-index: 1;
+    }
+
+    .tooltip-container:hover .tooltiptext {
+      visibility: visible;
     }
   </style>
 

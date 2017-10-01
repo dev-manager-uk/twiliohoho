@@ -3,12 +3,33 @@
 </div>
 <div>
   <div ng-repeat="user in users">
-    <p ng-if="user.user">
-      <div class="statusBall" ng-class="{busyUser : user.status != 'free', freeUser : user.status == 'free'}"></div>
-      <div class="statusText">
-        {{user.user}}
-        <label ng-if="user.text">({{user.text}})</label>
+    <div class="statusBall" ng-class="[user.status == 'free' ? 'freeUser' : 'busyUser', 
+      user.text == selectedUser.text ? 'border' : '']"></div>
+    <div ng-class="user.text != selectedUser.text ? 'statusText tooltip-container' : 'statusText'">
+      <div ng-if="user.text != selectedUser.text && selectedUser">
+        <div ng-if="selectedUser.status == 'free'">
+          <label ng-if="user.user" ng-click="call(user.number, selectedUser.number);">
+            {{user.user}}
+          </label>
+          <span ng-if="user.user" class="tooltiptext">Call {{user.user}}</span>
+
+          <label ng-if="!user.user" ng-click="call(user.number, selectedUser.number);">
+            {{user.text}}
+          </label>
+          <span ng-if="!user.user" class="tooltiptext">Call {{user.text}}</span>
+        </div>
+        <div ng-if="selectedUser.status != 'free'">
+          <label ng-if="user.user" ng-click="transfer(user.number);">{{user.user}}</label>
+          <span ng-if="user.user" class="tooltiptext">Transfer {{user.user}}</span>
+          <label ng-if="!user.user" ng-click="transfer(user.number);">{{user.text}}</label>
+          <span ng-if="!user.user" class="tooltiptext">Transfer {{user.text}}</span>
+        </div>
       </div>
-    </p>
+
+      <div ng-if="user.text == selectedUser.text || !selectedUser">
+        <label ng-if="user.user">{{user.user}}</label>
+        <label ng-if="!user.user">{{user.text}}</label>
+      </div>
+    </div>
   </div>
 </div>

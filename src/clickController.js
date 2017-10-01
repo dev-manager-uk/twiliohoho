@@ -123,6 +123,75 @@ module.exports.formatPhoneNumberPerUserPOST = function(req, res, next) {
   });
 };
 
+module.exports.clickBetweenClients = function(req, res, next){
+  let called;
+  let user;
+
+  if (req.body.called !== undefined) {
+    called = req.body.called;
+  }
+
+  if (req.body.user !== undefined) {
+    user = req.body.user;
+  }
+
+  if (called === undefined || called === "") {
+    return res
+      .status(405)
+      .send({ message: "There is no called number selected" });
+  }
+
+  if (user === undefined || user === "") {
+    return res.status(405).send({ message: "There is no user selected" });
+  }
+
+  let server = getServer(req);
+  let fullUrl = server + "/Connect-Users";
+  let userCalled = "sip:" + called + "@" + config.twilio.sipDomain;
+  let userCalling = "sip:" + user + "@" + config.twilio.sipDomain;
+
+  client.calls.create(
+    {
+      url: fullUrl + "?called=" + userCalled,
+      method: 'POST',
+      to: userCalling,
+      from: config.twilio.callerId
+    },
+    function(err, call) {
+      if (err) {
+        res.status(405).send({ message: err });
+        return;
+      }
+        res.status(200).send({ message: "Thanks for calling!" });
+      });
+}
+
+module.exports.connectUsers = function(req, res, next){
+  let called;
+  
+    if (req.body.called !== undefined) {
+      called = req.body.called;
+    }
+  
+    if (called === undefined || called === "") {
+      return res
+        .status(405)
+        .send(o2x({ message: "There is no number selected" }));
+    }
+
+    res.contentType("application/xml");
+    const twimlResponse = new VoiceResponse();
+    const dial = twimlResponse.dial({ callerId: config.twilio.callerId });
+    dial.number({}, returnedNumber);
+
+    // We include a second Dial here. When the original Dial ends because the
+    // customer is redirected, the user continues to this Dial and joins their
+    // own conference.
+    const confDial = twimlResponse.dial({});
+    confDial.conference({}, req.body.CallSid + "_Users");
+    res.status(200).send(twimlResponse.toString());
+}
+
 //This endpoint returns a Twiml in order to call called number
 module.exports.outboundCallPOST = function(req, res, next) {
   let called;
