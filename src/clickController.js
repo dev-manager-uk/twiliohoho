@@ -168,9 +168,15 @@ module.exports.clickBetweenClients = function(req, res, next){
 
 module.exports.connectUsers = function(req, res, next){
   let called;
-  
+
     if (req.body.called !== undefined) {
       called = req.body.called;
+    } else if (req.body.Called !== undefined) {
+      called = req.body.Called;
+    } else if (req.query.called !== undefined) {
+      called = req.query.called;
+    } else {
+      called = req.query.Called;
     }
   
     if (called === undefined || called === "") {
