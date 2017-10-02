@@ -145,14 +145,14 @@ module.exports.clickBetweenClients = function(req, res, next){
     return res.status(405).send({ message: "There is no user selected" });
   }
 
-  let server = getServer(req);
-  let fullUrl = server + "/Connect-Users";
   let userCalled = "sip:" + called + "@" + config.twilio.sipDomain;
   let userCalling = "sip:" + user + "@" + config.twilio.sipDomain;
+  let server = getServer(req);
+  let fullUrl = server + "/Connect-Users?called=" + userCalled;
 
   client.calls.create(
     {
-      url: fullUrl + "?called=" + userCalled,
+      url: fullUrl,
       method: "POST",
       to: userCalling,
       from: config.twilio.callerId
@@ -167,7 +167,7 @@ module.exports.clickBetweenClients = function(req, res, next){
 }
 
 module.exports.connectUsers = function(req, res, next){
-  let called;
+    let called;
 
     if (req.body.called !== undefined) {
       called = req.body.called;
@@ -188,7 +188,7 @@ module.exports.connectUsers = function(req, res, next){
     res.contentType("application/xml");
     const twimlResponse = new VoiceResponse();
     const dial = twimlResponse.dial({ callerId: config.twilio.callerId });
-    dial.sip(called);
+    dial.sip("sip:1003@tweb.sip.us1.twilio.com");
 
     // We include a second Dial here. When the original Dial ends because the
     // customer is redirected, the user continues to this Dial and joins their
