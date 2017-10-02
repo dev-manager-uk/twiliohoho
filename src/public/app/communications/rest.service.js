@@ -97,4 +97,18 @@ app.service("RESTService", function ($http, $q) {
     });
     return defer.promise;
   }
+
+  this.callBetweenClients = function (data) {
+    let defer = $q.defer();
+    $http({
+      method: 'POST',
+      url: '/Click-Between-Clients',
+      data: data
+    }).then(function (response) {
+      defer.resolve(response);
+    }, function (err) {
+      defer.reject(err);
+    });
+    return defer.promise;
+  }
 });

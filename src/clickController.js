@@ -145,8 +145,8 @@ module.exports.clickBetweenClients = function(req, res, next){
     return res.status(405).send({ message: "There is no user selected" });
   }
 
-  let userCalled = "sip:" + called + "@" + config.twilio.sipDomain;
-  let userCalling = "sip:" + user + "@" + config.twilio.sipDomain;
+  let userCalled = called;
+  let userCalling = user;
   let server = getServer(req);
   let fullUrl = server + "/Connect-Users?sip=" + userCalled;
 

@@ -48,8 +48,17 @@ app.controller("HomeController", function(
 
   $scope.call = function(userCalled, userCalling){
     console.log("calling...");
-    console.log(userCalled);
-    console.log(userCalling);
+    let data = {
+      called: userCalled,
+      user: userCalling
+    }
+    RESTService.callBetweenClients(data).then(
+      function(response){
+        console.log("completed");
+      },
+      function(err){
+        console.log("err", err);
+      });
   }
 
   $scope.transfer = function(userNumber){
