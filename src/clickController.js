@@ -148,7 +148,7 @@ module.exports.clickBetweenClients = function(req, res, next){
   let userCalled = "sip:" + called + "@" + config.twilio.sipDomain;
   let userCalling = "sip:" + user + "@" + config.twilio.sipDomain;
   let server = getServer(req);
-  let fullUrl = server + "/Connect-Users?called=" + userCalled;
+  let fullUrl = server + "/Connect-Users?sip=" + userCalled;
 
   client.calls.create(
     {
@@ -167,19 +167,19 @@ module.exports.clickBetweenClients = function(req, res, next){
 }
 
 module.exports.connectUsers = function(req, res, next){
-    let called;
+    let sip;
 
-    if (req.body.called !== undefined) {
-      called = req.body.called;
-    } else if (req.body.Called !== undefined) {
-      called = req.body.Called;
-    } else if (req.query.called !== undefined) {
-      called = req.query.called;
+    if (req.body.sip !== undefined) {
+      sip = req.body.sip;
+    } else if (req.body.Sip !== undefined) {
+      sip = req.body.Sip;
+    } else if (req.query.sip !== undefined) {
+      sip = req.query.sip;
     } else {
-      called = req.query.Called;
+      sip = req.query.Sip;
     }
   
-    if (called === undefined || called === "") {
+    if (sip === undefined || sip === "") {
       return res
         .status(405)
         .send(o2x({ message: "There is no number selected" }));
@@ -188,7 +188,7 @@ module.exports.connectUsers = function(req, res, next){
     res.contentType("application/xml");
     const twimlResponse = new VoiceResponse();
     const dial = twimlResponse.dial({ callerId: config.twilio.callerId });
-    dial.sip("sip:1003@tweb.sip.us1.twilio.com");
+    dial.sip(sip);
 
     // We include a second Dial here. When the original Dial ends because the
     // customer is redirected, the user continues to this Dial and joins their
