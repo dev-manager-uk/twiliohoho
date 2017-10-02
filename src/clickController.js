@@ -153,7 +153,7 @@ module.exports.clickBetweenClients = function(req, res, next){
   client.calls.create(
     {
       url: fullUrl + "?called=" + userCalled,
-      method: 'POST',
+      method: "POST",
       to: userCalling,
       from: config.twilio.callerId
     },
@@ -188,7 +188,7 @@ module.exports.connectUsers = function(req, res, next){
     res.contentType("application/xml");
     const twimlResponse = new VoiceResponse();
     const dial = twimlResponse.dial({ callerId: config.twilio.callerId });
-    dial.number({}, called);
+    dial.sip(called);
 
     // We include a second Dial here. When the original Dial ends because the
     // customer is redirected, the user continues to this Dial and joins their
