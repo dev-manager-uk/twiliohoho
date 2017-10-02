@@ -12,15 +12,6 @@ app
 	  	}
 		}
 	})
-	.state('home',{
-    url: '/:user',
-		views: {
-	  	'main': {
-				templateUrl: 'app/views/home.html',
-				controller: 'HomeController'
-	  	}
-		}
-  })
   .state('callList',{
     url: '/calls',
 		views: {
@@ -36,6 +27,15 @@ app
 	  	'main': {
 				templateUrl: 'app/views/conferenceList.html',
 				controller: 'ConferenceListController'
+	  	}
+		}
+	})
+	.state('home',{
+    url: '/:user',
+		views: {
+	  	'main': {
+				templateUrl: 'app/views/home.html',
+				controller: 'HomeController'
 	  	}
 		}
   });
