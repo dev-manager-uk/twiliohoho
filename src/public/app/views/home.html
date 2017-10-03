@@ -2,6 +2,7 @@
   <h2>User List</h2>
 </div>
 <div>
+  {{selectedUser}}
   <div ng-repeat="user in users">
     <div class="statusBall" ng-class="[user.status == 'free' ? 'freeUser' : 'busyUser', 
       user.text == selectedUser.text ? 'border' : '']"></div>
@@ -19,9 +20,9 @@
           <span ng-if="!user.user" class="tooltiptext">Call {{user.text}}</span>
         </div>
         <div ng-if="selectedUser.status != 'free'">
-          <label ng-if="user.user" ng-click="transfer(user.number);">{{user.user}}</label>
+          <label ng-if="user.user" ng-click="joinConference(user.number);">{{user.user}}</label>
           <span ng-if="user.user" class="tooltiptext">Transfer {{user.user}}</span>
-          <label ng-if="!user.user" ng-click="transfer(user.number);">{{user.text}}</label>
+          <label ng-if="!user.user" ng-click="joinConference(user.number);">{{user.text}}</label>
           <span ng-if="!user.user" class="tooltiptext">Transfer {{user.text}}</span>
         </div>
       </div>
