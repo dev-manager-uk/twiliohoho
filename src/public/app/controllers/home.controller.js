@@ -62,7 +62,9 @@ app.controller("HomeController", function(
               }
             });
           });
-          $scope.selectedUser = selectedUserTmp
+          console.log("$scope.selectedUser", $scope.selectedUser);
+          console.log("selectedUser", selectedUser);
+          $scope.selectedUser = selectedUserTmp;
         },
         function(err) {
           console.log("err", err);
@@ -94,6 +96,7 @@ app.controller("HomeController", function(
   $scope.joinConference = function(UserNo) {
     if(!$scope.selectedUser.hasOwnProperty('conferenceSid')){
       console.log("User has no conference!!");
+      return;
     }
     let data = {
       conferenceSid: $scope.selectedUser.conferenceSid,
