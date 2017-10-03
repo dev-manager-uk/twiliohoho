@@ -54,9 +54,11 @@ app.controller("HomeController", function(
           });
           angular.forEach($scope.conferences, function(confVal, confKey) {
             angular.forEach(confVal.participants, function(participant) {
-              if(selectedUserTmp.number === participant.to){
-                selectedUserTmp.conferenceSid = confVal.sid;
-                selectedUserTmp.friendlyName = confVal.friendlyName;
+              if(selectedUserTmp.hasOwnProperty('number')){
+                if(selectedUserTmp.number === participant.to){
+                  selectedUserTmp.conferenceSid = confVal.sid;
+                  selectedUserTmp.friendlyName = confVal.friendlyName;
+                }
               }
             });
           });
