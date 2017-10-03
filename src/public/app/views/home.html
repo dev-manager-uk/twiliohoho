@@ -1,8 +1,4 @@
-<div style="width: 100%" align="center">
-  <h2>User List</h2>
-</div>
-<div>
-  {{selectedUser}}
+<div style="margin-top: 2vh;">
   <div ng-repeat="user in users">
     <div class="statusBall" ng-class="[user.status == 'free' ? 'freeUser' : 'busyUser', 
       user.text == selectedUser.text ? 'border' : '']"></div>
