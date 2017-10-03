@@ -62,9 +62,9 @@ app.controller("HomeController", function(
               }
             });
           });
-          console.log("$scope.selectedUser", $scope.selectedUser);
-          console.log("selectedUser", selectedUser);
           $scope.selectedUser = selectedUserTmp;
+          console.log("$scope.selectedUser", $scope.selectedUser);
+          console.log("selectedUserTmp", selectedUserTmp);
         },
         function(err) {
           console.log("err", err);
