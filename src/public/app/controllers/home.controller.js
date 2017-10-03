@@ -29,7 +29,7 @@ app.controller("HomeController", function(
       RESTService.getConferenceList().then(
         function(response) {
           $scope.conferences = response.data;
-          let selectedUserTmp = undefined;
+          let selectedUserTmp = {};
           angular.forEach($scope.users, function(usersVal) {
             usersVal.status = "free";
             if ($stateParams.user === usersVal.text) {
