@@ -1,10 +1,15 @@
+
+<br/>
+<div class="alert alert-warning" ng-if="msg">
+  {{msg}}
+</div>
 <div style="margin-top: 2vh;">
   <div ng-repeat="user in users">
     <div class="statusBall" ng-class="[user.status == 'free' ? 'freeUser' : 'busyUser', 
       user.text == selectedUser.text ? 'border' : '']"></div>
     <div ng-class="user.text != selectedUser.text ? 'statusText tooltip-container' : 'statusText'">
       <div ng-if="user.text != selectedUser.text && selectedUser">
-        <div ng-if="selectedUser.status == 'free'">
+        <div ng-if="selectedUser.status == 'free' && selectedUser">
           <label ng-if="user.user" ng-click="call(user.number, selectedUser.number);">
             {{user.user}}
           </label>
@@ -15,14 +20,17 @@
           </label>
           <span ng-if="!user.user" class="tooltiptext">Call {{user.text}}</span>
         </div>
-        <div ng-if="selectedUser.status != 'free'">
+        <div ng-if="selectedUser.status == 'busy'">
           <label ng-if="user.user" ng-click="joinConference(user.number);">{{user.user}}</label>
           <span ng-if="user.user" class="tooltiptext">Transfer {{user.user}}</span>
           <label ng-if="!user.user" ng-click="joinConference(user.number);">{{user.text}}</label>
           <span ng-if="!user.user" class="tooltiptext">Transfer {{user.text}}</span>
         </div>
+        <div ng-if="selectedUser.status != 'free' && selectedUser.status != 'busy'">
+          <label ng-if="user.user">{{user.user}}</label>
+          <label ng-if="!user.user">{{user.text}}</label>
+        </div>
       </div>
-
       <div ng-if="user.text == selectedUser.text || !selectedUser">
         <label ng-if="user.user">{{user.user}}</label>
         <label ng-if="!user.user">{{user.text}}</label>

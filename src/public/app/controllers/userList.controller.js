@@ -1,5 +1,5 @@
 "use strict";
-app.controller("HomeController", function(
+app.controller("userListController", function(
   $scope,
   $state,
   $interval,
@@ -30,6 +30,7 @@ app.controller("HomeController", function(
         function(response) {
           $scope.conferences = response.data;
           let selectedUserTmp = {};
+          $scope.msg = undefined;
           angular.forEach($scope.users, function(usersVal) {
             usersVal.status = "free";
             if ($stateParams.user === usersVal.text) {
@@ -63,6 +64,9 @@ app.controller("HomeController", function(
               }
             });
           });
+          if(!selectedUserTmp.hasOwnProperty('number')){
+            $scope.msg = "There is no user selected";
+          }
           $scope.selectedUser = selectedUserTmp;
         },
         function(err) {

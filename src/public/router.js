@@ -34,8 +34,8 @@ app
     url: '/:user',
 		views: {
 	  	'main': {
-				templateUrl: 'app/views/home.html',
-				controller: 'HomeController'
+				templateUrl: 'app/views/userList.html',
+				controller: 'userListController'
 	  	}
 		}
   });
