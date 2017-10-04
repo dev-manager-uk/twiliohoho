@@ -49,6 +49,7 @@ app.controller("HomeController", function(
               }
               if ($stateParams.user === usersVal.text) {
                 selectedUserTmp = usersVal;
+                selectedUserTmp.callSid = callVal.sid;
               }
             });
           });
@@ -93,7 +94,26 @@ app.controller("HomeController", function(
 
   $scope.joinConference = function(UserNo) {
     if(!$scope.selectedUser.hasOwnProperty('conferenceSid')){
-      console.log("User has no conference!!");
+      let params = {};
+      params.user1 = UserNo;
+
+      params.user2No = $scope.selectedUser.number;
+      params.user2CallSid = $scope.selectedUser.callSid;
+
+      angular.forEach($scope.calls, function(value, key) {
+        if (value.parentCallSid === $scope.selectedUser.callSid) {
+          params.clientNo = value.to;
+          params.clientCallSid = value.sid;
+          RESTService.createConference(params).then(
+            function(response) {
+              console.log("response", response);
+            },
+            function(err) {
+              console.log("err", err);
+            }
+          );
+        }
+      });
       return;
     }
     let data = {
