@@ -7,7 +7,7 @@
     <div class="statusBall" ng-class="[user.status == 'free' ? 'freeUser' : 'busyUser', 
       user.text == selectedUser.text ? 'border' : '']"></div>
     <div ng-class="user.text != selectedUser.text ? 'statusText tooltip-container' : 'statusText'">
-      <div ng-if="user.text != selectedUser.text && selectedUser">
+      <div ng-if="user.text != selectedUser.text && selectedUser && user.status == 'free'">
         <div ng-if="selectedUser.status == 'free' && selectedUser">
           <label ng-if="user.user" ng-click="call(user.number, selectedUser.number);">
             {{user.user}}
@@ -30,7 +30,7 @@
           <label ng-if="!user.user">{{user.text}}</label>
         </div>
       </div>
-      <div ng-if="user.text == selectedUser.text || !selectedUser">
+      <div ng-if="user.text == selectedUser.text || !selectedUser || user.status == 'busy'">
         <label ng-if="user.user">{{user.user}}</label>
         <label ng-if="!user.user">{{user.text}}</label>
       </div>
