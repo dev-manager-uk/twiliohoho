@@ -1,4 +1,3 @@
-
 <br/>
 <div class="alert alert-warning" ng-if="msg">
   {{msg}}
@@ -35,6 +34,11 @@
         <label ng-if="user.user">{{user.user}}</label>
         <label ng-if="!user.user">{{user.text}}</label>
       </div>
+
+      <md-button class="md-raised md-primary" ng-if="user.friendlyName.indexOf('_User') > -1"
+        aria-label="ResumeButton"  ng-click="resumeCall(user.callSid, user.friendlyName, user.conferenceSid)" >
+        <label>Resume: {{user.text}}</label>
+    </md-button>
     </div>
   </div>
 </div>

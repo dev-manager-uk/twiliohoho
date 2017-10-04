@@ -30,12 +30,21 @@ app
 	  	}
 		}
 	})
-	.state('home',{
-    url: '/:user',
+	.state('userList',{
+    url: '/userList/:user',
 		views: {
 	  	'main': {
 				templateUrl: 'app/views/userList.html',
 				controller: 'userListController'
+	  	}
+		}
+	})
+	.state('home',{
+    url: '/',
+		views: {
+	  	'main': {
+				templateUrl: 'app/views/home.html',
+				controller: 'HomeController'
 	  	}
 		}
   });

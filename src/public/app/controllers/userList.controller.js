@@ -42,6 +42,30 @@ app.controller("userListController", function(
                 delete selectedUserTmp.friendlyName;
               }
             }
+            if(usersVal.hasOwnProperty('conferenceSid')){
+              delete usersVal.conferenceSid;
+            }
+            if(usersVal.hasOwnProperty('friendlyName')){
+              delete usersVal.friendlyName;
+            }
+            if(usersVal.hasOwnProperty('callSid')){
+              delete usersVal.callSid;
+            }
+            angular.forEach($scope.conferences, function(confVal, confKey) {
+              angular.forEach(confVal.participants, function(participant) {
+                if(selectedUserTmp.hasOwnProperty('number')){
+                  if(selectedUserTmp.number === participant.to){
+                    selectedUserTmp.conferenceSid = confVal.sid;
+                    selectedUserTmp.friendlyName = confVal.friendlyName;
+                  }
+                }
+                if(usersVal.number === participant.to){
+                  usersVal.conferenceSid = confVal.sid;
+                  usersVal.friendlyName = confVal.friendlyName;
+                  usersVal.callSid = participant.callSid;
+                }
+              });
+            });
           });
           angular.forEach($scope.calls, function(callVal, callKey) {
             angular.forEach($scope.users, function(usersVal) {
@@ -51,16 +75,6 @@ app.controller("userListController", function(
               if ($stateParams.user === usersVal.text) {
                 selectedUserTmp = usersVal;
                 selectedUserTmp.callSid = callVal.sid;
-              }
-            });
-          });
-          angular.forEach($scope.conferences, function(confVal, confKey) {
-            angular.forEach(confVal.participants, function(participant) {
-              if(selectedUserTmp.hasOwnProperty('number')){
-                if(selectedUserTmp.number === participant.to){
-                  selectedUserTmp.conferenceSid = confVal.sid;
-                  selectedUserTmp.friendlyName = confVal.friendlyName;
-                }
               }
             });
           });
@@ -92,11 +106,8 @@ app.controller("userListController", function(
     );
   };
 
-  $scope.transfer = function(userNumber) {
-    console.log("tranfering...", userNumber);
-  };
-
   $scope.joinConference = function(UserNo) {
+    console.log("tranfering...", UserNo);
     if(!$scope.selectedUser.hasOwnProperty('conferenceSid')){
       let params = {};
       params.user1 = UserNo;
@@ -134,4 +145,21 @@ app.controller("userListController", function(
       }
     );
   };
+
+  $scope.resumeCall = function(callSid, confName, confSid) {
+    let data = {
+      "callSid": callSid,
+      "conferenceName": confName,
+      "conferenceSid": confSid
+    }
+    RESTService.resumeCall(data).then(
+      function(response) {
+        console.log("response", response);
+      },
+      function(err) {
+        console.log("err", err);
+      }
+    );
+  };
+
 });
