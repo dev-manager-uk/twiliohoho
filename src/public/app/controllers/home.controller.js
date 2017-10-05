@@ -17,6 +17,6 @@ app.controller("HomeController", function(
   );
 
   $scope.click = function(number){
-    $location.path("/userList/" + number);
+    $location.path("/user/" + number);
   }
 });

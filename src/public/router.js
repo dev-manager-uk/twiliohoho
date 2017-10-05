@@ -30,8 +30,8 @@ app
 	  	}
 		}
 	})
-	.state('userList',{
-    url: '/userList/:user',
+	.state('user',{
+    url: '/user/:user',
 		views: {
 	  	'main': {
 				templateUrl: 'app/views/userList.html',

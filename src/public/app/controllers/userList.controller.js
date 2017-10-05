@@ -108,15 +108,18 @@ app.controller("userListController", function(
 
   $scope.joinConference = function(UserNo) {
     console.log("tranfering...", UserNo);
+    let isRequestDone = false;
     if(!$scope.selectedUser.hasOwnProperty('conferenceSid')){
+      console.log("Trying to conference");
       let params = {};
       params.user1 = UserNo;
 
       params.user2No = $scope.selectedUser.number;
       params.user2CallSid = $scope.selectedUser.callSid;
-
       angular.forEach($scope.calls, function(value, key) {
         if (value.parentCallSid === $scope.selectedUser.callSid) {
+          console.log("found call");
+          isRequestDone = true;
           params.clientNo = value.to;
           params.clientCallSid = value.sid;
           RESTService.createConference(params).then(
@@ -129,21 +132,29 @@ app.controller("userListController", function(
           );
         }
       });
-      return;
+    }else{
+      console.log("Move to conference");
+      let data = {
+        conferenceSid: $scope.selectedUser.conferenceSid,
+        conferenceName: $scope.selectedUser.friendlyName,
+        callNo: UserNo
+      };
+      isRequestDone = true;
+      RESTService.createCallAndJoinConference(data).then(
+        function(response) {
+          console.log("response", response);
+        },
+        function(err) {
+          console.log("err", err);
+        }
+      );
     }
-    let data = {
-      conferenceSid: $scope.selectedUser.conferenceSid,
-      conferenceName: $scope.selectedUser.friendlyName,
-      callNo: UserNo
-    };
-    RESTService.createCallAndJoinConference(data).then(
-      function(response) {
-        console.log("response", response);
-      },
-      function(err) {
-        console.log("err", err);
+
+    setTimeout(function() {
+      if(!isRequestDone){
+        $scope.joinConference(UserNo);
       }
-    );
+    }, 500);
   };
 
   $scope.resumeCall = function(callSid, confName, confSid) {
