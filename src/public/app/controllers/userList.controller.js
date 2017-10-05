@@ -106,6 +106,9 @@ app.controller("userListController", function(
     );
   };
 
+  const MAX_ATTEMPT = 10;
+  let countAttempt = 0;
+
   $scope.joinConference = function(UserNo) {
     console.log("tranfering...", UserNo);
     let isRequestDone = false;
@@ -151,8 +154,18 @@ app.controller("userListController", function(
     }
 
     setTimeout(function() {
+      console.log("countAttempt", countAttempt);
+      console.log("attempts limit", MAX_ATTEMPT);
+      if(MAX_ATTEMPT < countAttempt){
+        countAttempt = 0;
+        console.log("It was not possible to transfer your user, please try again.")
+        return;
+      }
       if(!isRequestDone){
+        countAttempt++;
         $scope.joinConference(UserNo);
+      }else{
+        countAttempt = 0;
       }
     }, 500);
   };
