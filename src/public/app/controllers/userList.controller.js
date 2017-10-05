@@ -110,7 +110,7 @@ app.controller("userListController", function(
     console.log("tranfering...", UserNo);
     let isRequestDone = false;
     if(!$scope.selectedUser.hasOwnProperty('conferenceSid')){
-      console.log("Trying to conference");
+      console.log("Trying to create conference");
       let params = {};
       params.user1 = UserNo;
 
