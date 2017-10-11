@@ -110,7 +110,10 @@ module.exports.formatPhoneNumberPerUserPOST = function(req, res, next) {
         url: fullUrl + "?number=" + called,
         method: "POST",
         to: userCall,
-        from: config.twilio.callerId
+        from: config.twilio.callerId,
+        statusCallback: server + "/events",
+        statusCallbackMethod: "POST",
+        statusCallbackEvent: ["completed"]
       },
       function(err, call) {
         if (err) {
@@ -798,4 +801,26 @@ module.exports.createCallAndJoinConference = function(req, res, next) {
 //This endpoint retrives a list of users
 module.exports.getUsers = function(req, res, next) {
   return res.status(200).send({ users: USERS });
+};
+
+module.exports.events = function(req, res, next){
+  let to = req.body.to;
+  let fromNumber = req.body.from;
+  let callStatus = req.body.CallStatus;
+  let callSid = req.body.callSid;
+
+  client.calls.create(
+    {
+      url: 'http://demo.twilio.com/docs/voice.xml',
+      to: to,
+      from: config.twilio.callerId,
+    },
+    function(err, call) {
+      if (err) {
+        res.status(405).send(o2x({ message: err }));
+        return;
+      }
+      res.status(200).send(o2x({ message: "Thanks for calling!" }));
+    }
+  );
 };

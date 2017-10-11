@@ -26,26 +26,7 @@ module.exports.generateRoutes = function (app) {
 
   app.get("/Get-Users", clickController.getUsers);
 
-  app.post('/events', function(req, res){
-    let to = req.body.to;
-    let fromNumber = req.body.from;
-    let callStatus = req.body.CallStatus;
-    let callSid = req.body.callSid;
-
-    client.calls.create(
-      {
-        to: to,
-        from: config.twilio.callerId,
-      },
-      function(err, call) {
-        if (err) {
-          res.status(405).send(o2x({ message: err }));
-          return;
-        }
-        res.status(200).send(o2x({ message: "Thanks for calling!" }));
-      }
-    );
-  });
+  app.post('/events', clickController.events);
 
   app.use('/*', function(req, res){
     res.sendFile(__dirname + '/public/index.html');
