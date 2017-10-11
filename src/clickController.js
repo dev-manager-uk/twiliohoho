@@ -809,18 +809,23 @@ module.exports.events = function(req, res, next){
   let callStatus = req.body.CallStatus;
   let callSid = req.body.callSid;
 
-  client.calls.create(
-    {
-      url: 'http://demo.twilio.com/docs/voice.xml',
-      to: "sip:1003@tweb.sip.us1.twilio.com",
-      from: config.twilio.callerId,
-    },
-    function(err, call) {
-      if (err) {
-        res.status(405).send(o2x({ message: err }));
-        return;
-      }
-      res.status(200).send(o2x({ message: "Thanks for calling!" }));
+  getCall(callSid, function(err, data){
+    if(err){
+
     }
-  );
+    client.calls.create(
+      {
+        url: 'http://demo.twilio.com/docs/voice.xml',
+        to: data.to,
+        from: config.twilio.callerId,
+      },
+      function(err, call) {
+        if (err) {
+          res.status(405).send(o2x({ message: err }));
+          return;
+        }
+        res.status(200).send(o2x({ message: "Thanks for calling!" }));
+      }
+    );
+  });
 };
