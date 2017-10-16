@@ -3,6 +3,7 @@
 const async = require("async");
 const o2x = require("object-to-xml");
 const twilio = require("twilio");
+const request = require('request');
 
 //Project dependencies
 const config = require("./config");
@@ -16,7 +17,9 @@ let databaseInMemory = [];
 //Collection model
 const colectionStructure = {
   clientConferenceName: "",
+  clientConferenceSid: "",
   usersConferenceName: "",
+  usersConferenceSid: "",
   timestamp: ""
 };
 
@@ -110,10 +113,7 @@ module.exports.formatPhoneNumberPerUserPOST = function(req, res, next) {
         url: fullUrl + "?number=" + called,
         method: "POST",
         to: userCall,
-        from: config.twilio.callerId,
-        statusCallback: server + "/events",
-        statusCallbackMethod: "POST",
-        statusCallbackEvent: ["completed"]
+        from: config.twilio.callerId
       },
       function(err, call) {
         if (err) {
@@ -196,8 +196,13 @@ module.exports.connectUsers = function(req, res, next){
     // We include a second Dial here. When the original Dial ends because the
     // customer is redirected, the user continues to this Dial and joins their
     // own conference.
+    let server = getServer(req);
     const confDial = twimlResponse.dial({});
-    confDial.conference({}, req.body.CallSid + "_Users");
+    confDial.conference({
+      statusCallback: server + "/events",
+      statusCallbackMethod: "POST",
+      statusCallbackEvent: 'end leave'
+    }, req.body.CallSid + "_Users");
     res.status(200).send(twimlResponse.toString());
 }
 
@@ -243,8 +248,13 @@ module.exports.outboundCallPOST = function(req, res, next) {
     // We include a second Dial here. When the original Dial ends because the
     // customer is redirected, the user continues to this Dial and joins their
     // own conference.
+    let server = getServer(req);
     const confDial = twimlResponse.dial({});
-    confDial.conference({}, req.body.CallSid + "_Users");
+    confDial.conference({
+      statusCallback: server + "/events",
+      statusCallbackMethod: "POST",
+      statusCallbackEvent: 'end leave'
+    }, req.body.CallSid + "_Users");
     res.status(200).send(twimlResponse.toString());
   });
 };
@@ -622,10 +632,14 @@ module.exports.joinConference = function(req, res, next) {
   const twiml = new VoiceResponse();
   const dial = twiml.dial();
 
+  let server = getServer(req);
+
   dial.conference(conferenceName, {
-    startConferenceOnEnter: true,
-    endConferenceOnExit: false
+    statusCallback: server + "/events",
+    statusCallbackMethod: "POST",
+    statusCallbackEvent: 'end leave'
   });
+
   res.contentType("application/xml");
   res.set("Content-Type", "text/xml");
   res.send(twiml.toString());
@@ -804,28 +818,93 @@ module.exports.getUsers = function(req, res, next) {
 };
 
 module.exports.events = function(req, res, next){
-  let to = req.body.to;
-  let fromNumber = req.body.from;
-  let callStatus = req.body.CallStatus;
-  let callSid = req.body.callSid;
+  let conferenceSid = req.body.ConferenceSid;
+  let conferenceName = req.body.FriendlyName;
+  let event = req.body.StatusCallbackEvent;
 
-  getCall(callSid, function(err, data){
-    if(err){
-
-    }
-    client.calls.create(
-      {
-        url: 'http://demo.twilio.com/docs/voice.xml',
-        to: data.to,
-        from: config.twilio.callerId,
-      },
-      function(err, call) {
-        if (err) {
-          res.status(405).send(o2x({ message: err }));
-          return;
+  if(event === "participant-leave" && conferenceName.indexOf('_User') > -1){
+    client
+    .conferences(conferenceSid)
+    .fetch()
+    .then(function(conf) {
+      let progressConference = {
+        participants: []
+      };
+      progressConference.sid = conf.sid;
+      progressConference.friendlyName = conf.friendlyName;
+      progressConference.dateCreated = conf.dateCreated;
+      getParticipants(progressConference, function(err, data) {
+        if(data.participants.length === 1){
+          let requestData = {};
+          data.participants.forEach(function(participant){
+            requestData = {
+              "callSid": participant.callSid,
+              "conferenceName": conferenceName,
+              "conferenceSid": conferenceSid
+            }
+          });
+          let server = getServer(req);
+          request({
+            url: server + "/Join-Client-Conference",
+            method: "POST",
+            json: true,
+            body: requestData
+          }, function (err, response, body){
+            if (err) {
+              res.status(405).send({ message: err });
+              return;
+            }
+          });
         }
-        res.status(200).send(o2x({ message: "Thanks for calling!" }));
-      }
-    );
-  });
-};
+      });
+    });
+  }
+  // else if(event === "conference-end"){
+  //   let isCallFound = false;
+  //   let previousConferenceSid;
+  //   databaseInMemory.forEach(function(doc) {
+  //     if (doc.usersConferenceName === conferenceName && !isCallFound) {
+  //       isCallFound = true;
+  //       previousConferenceSid = doc.clientConferenceName;
+  //     }
+  //   });
+  //   if(previousConferenceSid === undefined){
+  //     res.status(405).send({ message: "conference not found" });
+  //     return;
+  //   }
+  //   client.conferences.list(
+  //     {
+  //       status: "in-progress"
+  //       // status: "completed"
+  //     },
+  //     function(err, data) {
+  //       if (err) {
+  //         return res.status(500).send(err);
+  //       }
+        
+
+  //   client
+  //   .conferences(previousConferenceSid)
+  //   .fetch()
+  //   .then(function(conf) {
+  //     let progressConference = {
+  //       participants: []
+  //     };
+  //     progressConference.sid = conf.sid;
+  //     progressConference.friendlyName = conf.friendlyName;
+  //     progressConference.dateCreated = conf.dateCreated;
+  //     getParticipants(progressConference, function(err, data) {
+  //       data.participants.forEach(function(participant){
+  //         client.calls(participant.callSid).update({
+  //           status: "completed"
+  //         }, function(err, call) {
+  //           if (err) {
+  //             res.status(405).send({ message: err });
+  //             return;
+  //           }
+  //         });
+  //       });
+  //     });
+  //   });
+  // }
+}
