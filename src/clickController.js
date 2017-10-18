@@ -879,6 +879,9 @@ module.exports.events = function(req, res, next){
       if (doc.usersConferenceName === conferenceName && !isCallFound) {
         isCallFound = true;
         previousConferenceName = doc.clientConferenceName;
+      }else if(doc.clientConferenceName === conferenceName && !isCallFound){
+        isCallFound = true;
+        previousConferenceName = doc.usersConferenceName;
       }
     });
     if(previousConferenceName === undefined){
