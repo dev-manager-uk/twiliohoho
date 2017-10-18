@@ -673,7 +673,7 @@ module.exports.joinClientConference = function(req, res, next) {
     err: ""
   };
 
-  databaseInMemory.forEach(function(doc) {
+  databaseInMemory.forEach(function(doc, index) {
     if (doc.usersConferenceName === conferenceName && !isCallFound) {
       isCallFound = true;
 
@@ -707,6 +707,7 @@ module.exports.joinClientConference = function(req, res, next) {
                   res.status(405).send({ message: err });
                   return;
                 }
+                databaseInMemory.splice(index, 1);
               });
             });
           });
@@ -872,58 +873,58 @@ module.exports.events = function(req, res, next){
       });
     });
   }
-  // else if(event === "conference-end"){
-  //   let isCallFound = false;
-  //   let previousConferenceName;
-  //   databaseInMemory.forEach(function(doc) {
-  //     if (doc.usersConferenceName === conferenceName && !isCallFound) {
-  //       isCallFound = true;
-  //       previousConferenceName = doc.clientConferenceName;
-  //     }else if(doc.clientConferenceName === conferenceName && !isCallFound){
-  //       isCallFound = true;
-  //       previousConferenceName = doc.usersConferenceName;
-  //     }
-  //   });
-  //   if(previousConferenceName === undefined){
-  //     res.status(405).send({ message: "conference not found" });
-  //     return;
-  //   }
-  //   client.conferences.list(
-  //     {
-  //       status: "in-progress"
-  //     },
-  //     function(err, data) {
-  //       if (err) {
-  //         return res.status(500).send(err);
-  //       }
-  //       data.forEach(function(conference){
-  //         if(conference.friendlyName === previousConferenceName){
-  //           client
-  //           .conferences(conference.sid)
-  //           .fetch()
-  //           .then(function(conf) {
-  //             let progressConference = {
-  //               participants: []
-  //             };
-  //             progressConference.sid = conf.sid;
-  //             progressConference.friendlyName = conf.friendlyName;
-  //             progressConference.dateCreated = conf.dateCreated;
-  //             getParticipants(progressConference, function(err, data) {
-  //               data.participants.forEach(function(participant){
-  //                 client.calls(participant.callSid).update({
-  //                   status: "completed"
-  //                 }, function(err, call) {
-  //                   if (err) {
-  //                     res.status(405).send({ message: err });
-  //                     return;
-  //                   }
-  //                 });
-  //               });
-  //             });
-  //           });
-  //         }
-  //       });
-  //     }
-  //   );
-  // }
+  else if(event === "conference-end"){
+    let isCallFound = false;
+    let previousConferenceName;
+    databaseInMemory.forEach(function(doc) {
+      if (doc.usersConferenceName === conferenceName && !isCallFound) {
+        isCallFound = true;
+        previousConferenceName = doc.clientConferenceName;
+      }else if(doc.clientConferenceName === conferenceName && !isCallFound){
+        isCallFound = true;
+        previousConferenceName = doc.usersConferenceName;
+      }
+    });
+    if(previousConferenceName === undefined){
+      res.status(405).send({ message: "conference not found" });
+      return;
+    }
+    client.conferences.list(
+      {
+        status: "in-progress"
+      },
+      function(err, data) {
+        if (err) {
+          return res.status(500).send(err);
+        }
+        data.forEach(function(conference){
+          if(conference.friendlyName === previousConferenceName){
+            client
+            .conferences(conference.sid)
+            .fetch()
+            .then(function(conf) {
+              let progressConference = {
+                participants: []
+              };
+              progressConference.sid = conf.sid;
+              progressConference.friendlyName = conf.friendlyName;
+              progressConference.dateCreated = conf.dateCreated;
+              getParticipants(progressConference, function(err, data) {
+                data.participants.forEach(function(participant){
+                  client.calls(participant.callSid).update({
+                    status: "completed"
+                  }, function(err, call) {
+                    if (err) {
+                      res.status(405).send({ message: err });
+                      return;
+                    }
+                  });
+                });
+              });
+            });
+          }
+        });
+      }
+    );
+  }
 }
