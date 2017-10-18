@@ -10,26 +10,6 @@ module.exports = {
     callerId: process.env.CALLER_ID,
     sipDomain: process.env.SIP_DOMAIN
   },
-  users: [
-    {
-      number:"1001",
-      user: "Marcus 1"
-    },
-    {
-      number:"1002",
-      user: "Marcus 2"
-    },
-    {
-      number:"1003",
-      user: "Marcelo 3"
-    },
-    {
-      number:"1004",
-      user: "Marcelo 4"
-    },
-    {
-      number:"1005"
-    }
-  ],
+  usersUrl: process.env.USERS_URL,
   port: process.env.PORT || 3000
 };
