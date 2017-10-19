@@ -591,7 +591,16 @@ module.exports.createConference = function(req, res, next) {
           res.status(405).send({ message: err });
           return;
         }
-        databaseInMemory.push(newCollection);
+        let dataSaved = false;
+        databaseInMemory.forEach(function(data){
+          if(data.clientConferenceName === newCollection.clientConferenceName &&
+              data.usersConferenceName === newCollection.usersConferenceName){
+                dataSaved = true;
+              }
+        });
+        if(!dataSaved){
+          databaseInMemory.push(newCollection);
+        }
         setOnHold(onHoldConfereneName);
         return res.status(200).send({ message: "Conferences created" });
       }
@@ -805,7 +814,16 @@ module.exports.createCallAndJoinConference = function(req, res, next) {
           newCollection.clientConferenceName = newConferenceName;
           newCollection.usersConferenceName = newConferenceNameUser;
           newCollection.timestamp = Date.now();
-          databaseInMemory.push(newCollection);
+          let dataSaved = false;
+          databaseInMemory.forEach(function(data){
+            if(data.clientConferenceName === newCollection.clientConferenceName &&
+                data.usersConferenceName === newCollection.usersConferenceName){
+                  dataSaved = true;
+                }
+          });
+          if(!dataSaved){
+            databaseInMemory.push(newCollection);
+          }
           client.calls.create(
             {
               url: fullUrlUser,
