@@ -698,16 +698,20 @@ module.exports.joinClientConference = function(req, res, next) {
           progressConference.sid = conf.sid;
           progressConference.friendlyName = conf.friendlyName;
           progressConference.dateCreated = conf.dateCreated;
+          let errorDetected = false;
           getParticipants(progressConference, function(err, data) {
-            data.participants.forEach(function(participant){
+            data.participants.forEach(function(participant, index){
               client.calls(participant.callSid).update({
                 status: "completed"
               }, function(err, call) {
                 if (err) {
+                  errorDetected = true;
                   res.status(405).send({ message: err });
                   return;
                 }
-                databaseInMemory.splice(index, 1);
+                if(index === data.participants.length - 1 && !errorDetected){
+                  databaseInMemory.splice(index, 1);
+                }
               });
             });
           });
