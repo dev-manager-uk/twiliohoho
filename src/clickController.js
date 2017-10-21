@@ -657,6 +657,7 @@ module.exports.joinConference = function(req, res, next) {
   let server = getServer(req);
 
   dial.conference(conferenceName, {
+    endConferenceOnExit: true,
     statusCallback: server + "/events",
     statusCallbackMethod: "POST",
     statusCallbackEvent: 'end leave'
