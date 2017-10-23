@@ -953,3 +953,31 @@ module.exports.events = function(req, res, next){
     );
   }
 }
+
+module.exports.hunt = function(req, res, next){
+  const response = new Twilio.twiml.VoiceResponse();
+  const event = req.body.event;
+  let usrs = USERS;
+  if (event.DialCallStatus === 'complete') {
+    response.hangup();
+  }else{
+    client.calls.list(
+      {
+        status: "in-progress"
+      },
+      function(err, data) {
+        let arrayOfCalls = [];
+        data.forEach(call => {
+          usrs.forEach(function(user, index){
+            if(user.number === call.to){
+              usrs.splice(index, 1);
+            }
+          });
+        });
+        if(usrs.length > 0){
+          const dial = response.dial({ action: url });
+          dial.number(numberToDial);
+        }
+      });
+  }
+}

@@ -28,6 +28,8 @@ module.exports.generateRoutes = function (app) {
 
   app.post('/events', clickController.events);
 
+  app.post('/hunt', clickController.hunt);
+
   app.use('/*', function(req, res){
     res.sendFile(__dirname + '/public/index.html');
   });
