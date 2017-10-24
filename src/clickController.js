@@ -955,29 +955,50 @@ module.exports.events = function(req, res, next){
 }
 
 module.exports.hunt = function(req, res, next){
-  const response = new Twilio.twiml.VoiceResponse();
-  const event = req.body.event;
+  const response = new VoiceResponse();
   let usrs = USERS;
-  if (event.DialCallStatus === 'complete') {
-    response.hangup();
-  }else{
-    client.calls.list(
-      {
-        status: "in-progress"
-      },
-      function(err, data) {
-        let arrayOfCalls = [];
-        data.forEach(call => {
-          usrs.forEach(function(user, index){
-            if(user.number === call.to){
-              usrs.splice(index, 1);
-            }
-          });
-        });
-        if(usrs.length > 0){
-          const dial = response.dial({ action: url });
-          dial.number(numberToDial);
-        }
-      });
+  const callDetails = {
+    callStatus: req.body.CallStatus,
+    dialCallStatus: req.body.DialCallStatus,
+    lastCalled: req.query.lastCalled
   }
+  if(//callDetails.callStatus !== 'busy' &&
+      //callDetails.callStatus !== 'no-answer' &&
+      //callDetails.callStatus !== 'in-progress' &&
+      callDetails.callStatus !== 'ringing'
+    ){
+        response.hangup();
+        return res.status(200).send(response.toString());
+  }
+  client.calls.list(
+    {
+      status: "in-progress"
+    },
+    function(err, data) {
+      data.forEach(call => {
+        usrs.forEach(function(user, index){
+          if(user.number === call.to){
+            usrs.splice(index, 1);
+          }
+        });
+      });
+      // usrs.forEach(function(user, index){
+      //   if(user.text === '1001' || user.text === '1002' ){
+      //   //|| user.number === callDetails.lastCalled){
+      //       usrs.splice(index, 1);
+      //   }
+      // });
+      if(usrs.length === 0){
+        response.hangup();
+        return res.status(200).send(response.toString());
+      }
+      const url = '/hunt?lastCalled='+usrs[0].number
+      const dial = response.dial(
+        { action: url, 
+          callerId: config.twilio.callerId 
+        }
+      );
+      dial.sip(usrs[0].number);
+      return res.status(200).send(response.toString());
+    });
 }
