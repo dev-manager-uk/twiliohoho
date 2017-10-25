@@ -960,12 +960,22 @@ module.exports.hunt = function(req, res, next){
   const callDetails = {
     callStatus: req.body.CallStatus,
     dialCallStatus: req.body.DialCallStatus,
-    lastCalled: req.query.lastCalled
+    lastCalled: req.query.lastCalled,
+    lastCalledIndex: req.query.lastCalledIndex
   }
-  if(//callDetails.callStatus !== 'busy' &&
-      //callDetails.callStatus !== 'no-answer' &&
-      //callDetails.callStatus !== 'in-progress' &&
-      callDetails.callStatus !== 'ringing'
+
+  if(callDetails.callStatus === 'completed' || 
+     callDetails.callStatus === 'initiated' ){
+        response.hangup();
+        return res.status(200).send(response.toString());
+  }
+
+  if(callDetails.callStatus !== 'busy' &&
+      callDetails.callStatus !== 'no-answer' &&
+      callDetails.callStatus !== 'canceled' &&
+      callDetails.callStatus !== 'failed' &&
+      callDetails.callStatus !== 'ringing' &&
+      callDetails.callStatus !== 'in-progress'
     ){
         response.hangup();
         return res.status(200).send(response.toString());
@@ -982,23 +992,31 @@ module.exports.hunt = function(req, res, next){
           }
         });
       });
-      // usrs.forEach(function(user, index){
-      //   if(user.text === '1001' || user.text === '1002' ){
-      //   //|| user.number === callDetails.lastCalled){
-      //       usrs.splice(index, 1);
-      //   }
-      // });
+      let sipToCall = usrs[0];
+      if(callDetails.lastCalled !== undefined){
+        if(callDetails.lastCalledIndex < USERS.length){
+          sipToCall = USERS[parseInt(callDetails.lastCalledIndex) + 1]
+        }else{
+          response.hangup();
+          return res.status(200).send(response.toString());
+        }
+      }
+      if(sipToCall === undefined){
+        response.hangup();
+        return res.status(200).send(response.toString());
+      }
       if(usrs.length === 0){
         response.hangup();
         return res.status(200).send(response.toString());
       }
-      const url = '/hunt?lastCalled='+usrs[0].number
+      const url = '/hunt?lastCalled=' + sipToCall.number +
+        '&lastCalledIndex=' + USERS.indexOf(sipToCall);
       const dial = response.dial(
         { action: url, 
           callerId: config.twilio.callerId 
         }
       );
-      dial.sip(usrs[0].number);
+      dial.sip(sipToCall.number);
       return res.status(200).send(response.toString());
     });
 }
