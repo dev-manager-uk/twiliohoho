@@ -1017,6 +1017,7 @@ module.exports.hunt = function(req, res, next){
         }
       );
       dial.sip(sipToCall.number);
+      response.play('https://api.twilio.com/cowbell.mp3');
       return res.status(200).send(response.toString());
     });
 }
