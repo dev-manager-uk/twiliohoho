@@ -39,11 +39,9 @@ request({
   }
   let users = JSON.parse(body).users;
   users.forEach(function(user){
-    if(user.number !== '1001' && user.number !== '1002'){
-      user.text = user.number;
-      user.number = "sip:" + user.number + "@" + config.twilio.sipDomain;
-      USERS.push(user);
-    }
+    user.text = user.number;
+    user.number = "sip:" + user.number + "@" + config.twilio.sipDomain;
+    USERS.push(user);
   });
 });
 
