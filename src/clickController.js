@@ -39,11 +39,9 @@ request({
   }
   let users = JSON.parse(body).users;
   users.forEach(function(user){
-    if(user.number !== '1001' && user.number !== '1002'){
-      user.text = user.number;
-      user.number = "sip:" + user.number + "@" + config.twilio.sipDomain;
-      USERS.push(user);
-    }
+    user.text = user.number;
+    user.number = "sip:" + user.number + "@" + config.twilio.sipDomain;
+    USERS.push(user);
   });
 });
 
@@ -971,17 +969,6 @@ module.exports.hunt = function(req, res, next){
       return res.status(200).send(response.toString());
   }
 
-  if(callDetails.dialCallStatus !== 'busy' &&
-      callDetails.dialCallStatus !== 'no-answer' &&
-      callDetails.dialCallStatus !== 'canceled' &&
-      callDetails.dialCallStatus !== 'failed' &&
-      callDetails.callStatus !== 'ringing' &&
-      callDetails.callStatus !== 'initiated' &&
-      callDetails.callStatus !== 'in-progress'
-    ){
-        response.hangup();
-        return res.status(200).send(response.toString());
-  }
   client.calls.list(
     {
       status: "in-progress"
@@ -1011,9 +998,11 @@ module.exports.hunt = function(req, res, next){
         response.hangup();
         return res.status(200).send(response.toString());
       }
-      const url = '/hunt?lastCalled=' + sipToCall.number +
+      const url = '/hunt?lastCalled=' + sipToCall.number + 
         '&lastCalledIndex=' + USERS.indexOf(sipToCall);
-      response.play('https://api.twilio.com/cowbell.mp3');
+      response.play({
+          loop: 1
+      }, 'http://demo.twilio.com/hellomonkey/monkey.mp3');
       const dial = response.dial(
         { action: url, 
           callerId: config.twilio.callerId 
