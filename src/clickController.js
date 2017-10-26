@@ -1013,6 +1013,7 @@ module.exports.hunt = function(req, res, next){
       }
       const url = '/hunt?lastCalled=' + sipToCall.number +
         '&lastCalledIndex=' + USERS.indexOf(sipToCall);
+      response.play('https://api.twilio.com/cowbell.mp3');
       const dial = response.dial(
         { action: url, 
           callerId: config.twilio.callerId 
