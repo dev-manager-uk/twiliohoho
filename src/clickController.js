@@ -39,9 +39,11 @@ request({
   }
   let users = JSON.parse(body).users;
   users.forEach(function(user){
-    user.text = user.number;
-    user.number = "sip:" + user.number + "@" + config.twilio.sipDomain;
-    USERS.push(user);
+    if(user.number !== '1001' && user.number !== '1002'){
+      user.text = user.number;
+      user.number = "sip:" + user.number + "@" + config.twilio.sipDomain;
+      USERS.push(user);
+    }
   });
 });
 
@@ -964,17 +966,17 @@ module.exports.hunt = function(req, res, next){
     lastCalledIndex: req.query.lastCalledIndex
   }
 
-  if(callDetails.callStatus === 'completed' || 
-     callDetails.callStatus === 'initiated' ){
-        response.hangup();
-        return res.status(200).send(response.toString());
+  if(callDetails.dialCallStatus === 'completed'){
+      response.hangup();
+      return res.status(200).send(response.toString());
   }
 
-  if(callDetails.callStatus !== 'busy' &&
-      callDetails.callStatus !== 'no-answer' &&
-      callDetails.callStatus !== 'canceled' &&
-      callDetails.callStatus !== 'failed' &&
+  if(callDetails.dialCallStatus !== 'busy' &&
+      callDetails.dialCallStatus !== 'no-answer' &&
+      callDetails.dialCallStatus !== 'canceled' &&
+      callDetails.dialCallStatus !== 'failed' &&
       callDetails.callStatus !== 'ringing' &&
+      callDetails.callStatus !== 'initiated' &&
       callDetails.callStatus !== 'in-progress'
     ){
         response.hangup();
