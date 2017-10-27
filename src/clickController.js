@@ -41,7 +41,7 @@ request({
   users.forEach(function(user){
     user.text = user.number;
     user.number = "sip:" + user.number + "@" + config.twilio.sipDomain;
-    USERS.push(user);
+    USERS.push(user); 
   });
 });
 
@@ -1000,9 +1000,9 @@ module.exports.hunt = function(req, res, next){
       }
       const url = '/hunt?lastCalled=' + sipToCall.number + 
         '&lastCalledIndex=' + USERS.indexOf(sipToCall);
-      response.play({
-          loop: 1
-      }, 'http://demo.twilio.com/hellomonkey/monkey.mp3');
+      // response.play({
+      //     loop: 1
+      // }, '/song');
       const dial = response.dial(
         { action: url, 
           callerId: config.twilio.callerId 

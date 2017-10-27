@@ -30,6 +30,10 @@ module.exports.generateRoutes = function (app) {
 
   app.post('/hunt', clickController.hunt);
 
+  app.use('/song', function(req, res){
+    res.sendFile(__dirname + '/assets/ringing.mp3');
+  });
+
   app.use('/*', function(req, res){
     res.sendFile(__dirname + '/public/index.html');
   });
