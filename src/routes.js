@@ -26,6 +26,8 @@ module.exports.generateRoutes = function (app) {
 
   app.get("/Get-Users", clickController.getUsers);
 
+  app.post("/Reset-users", clickController.resetUsers);
+
   app.post('/events', clickController.events);
 
   app.post('/hunt', clickController.hunt);

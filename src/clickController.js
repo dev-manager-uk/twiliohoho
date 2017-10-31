@@ -26,24 +26,29 @@ const colectionStructure = {
 //List of users stored in the config file
 const USERS = [];
 
-request({
-  url: config.usersUrl,
-  method: 'GET',
-  headers: {
-    'Accept': 'application/json',
-    'Accept-Charset': 'utf-8'
-  }
-}, function (err, response, body){
-  if (err) {
-    return;
-  }
-  let users = JSON.parse(body).users;
-  users.forEach(function(user){
-    user.text = user.number;
-    user.number = "sip:" + user.number + "@" + config.twilio.sipDomain;
-    USERS.push(user); 
+function resetUsers(cb){
+  request({
+    url: config.usersUrl,
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Accept-Charset': 'utf-8'
+    }
+  }, function (err, response, body){
+    if (err) {
+      return cb(err);
+    }
+    let users = JSON.parse(body).users;
+    users.forEach(function(user){
+      user.text = user.number;
+      user.number = "sip:" + user.number + "@" + config.twilio.sipDomain;
+      USERS.push(user); 
+    });
+    return cb();
   });
-});
+}
+
+resetUsers(function(err){});
 
 //Create authenticated instance of the twilio lib
 const client = twilio(config.twilio.apiKey, config.twilio.apiSecret, {
@@ -855,6 +860,15 @@ module.exports.createCallAndJoinConference = function(req, res, next) {
 module.exports.getUsers = function(req, res, next) {
   return res.status(200).send({ users: USERS });
 };
+
+module.exports.resetUsers = function(req, res, next){
+  resetUsers(function(err){
+    if(err){
+      return res.status(200).send({ message: "Error: Problems to reset users, please try again!" });
+    }
+    return res.status(200).send({ message: "Success: Users were reseted successfully" });
+  });
+}
 
 module.exports.events = function(req, res, next){
   let conferenceSid = req.body.ConferenceSid;
