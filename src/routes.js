@@ -6,6 +6,7 @@ module.exports.generateRoutes = function (app) {
   app.get('/Dial', dialController.formatPhoneNumberGET);
   app.post('/Dial', dialController.formatPhoneNumberPOST);
 
+  app.get('/Click', clickController.formatPhoneNumberPerUserPOST);  
   app.post('/Click', clickController.formatPhoneNumberPerUserPOST);  
   app.post('/Click-Client', clickController.clickClient);
   app.post('/Click-Dial', clickController.outboundCallPOST);
