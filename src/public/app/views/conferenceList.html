@@ -10,6 +10,7 @@
       <p><b>Sid: </b>{{conference.sid}}</p>
       <p><b>Name: </b>{{conference.friendlyName}}</p>
       <p><b>Date Created: </b>{{conference.dateCreated}}</p>
+      <p><b>Region: </b>{{conference.region}}</p>
       <p><b>Participants: </b>
       <div ng-repeat="participant in conference.participants | orderBy: '-callSid'" style="margin-left: 2vw">
         <p><b>Call Sid: </b>{{participant.callSid}}</p>

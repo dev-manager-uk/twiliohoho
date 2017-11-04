@@ -8,7 +8,8 @@ module.exports = {
     apiKey: process.env.API_SID,
     apiSecret: process.env.API_SECRET,
     callerId: process.env.CALLER_ID,
-    sipDomain: process.env.SIP_DOMAIN
+    sipDomain: process.env.SIP_DOMAIN,
+    region: process.env.REGION
   },
   usersUrl: process.env.USERS_URL,
   port: process.env.PORT || 3000

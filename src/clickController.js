@@ -219,7 +219,8 @@ module.exports.connectUsers = function(req, res, next){
     confDial.conference({
       statusCallback: server + "/events",
       statusCallbackMethod: "POST",
-      statusCallbackEvent: 'end leave'
+      statusCallbackEvent: 'end leave',
+      region: config.twilio.region
     }, req.body.CallSid + "_Users");
     res.status(200).send(twimlResponse.toString());
 }
@@ -271,7 +272,8 @@ module.exports.outboundCallPOST = function(req, res, next) {
     confDial.conference({
       statusCallback: server + "/events",
       statusCallbackMethod: "POST",
-      statusCallbackEvent: 'end leave'
+      statusCallbackEvent: 'end leave',
+      region: config.twilio.region
     }, req.body.CallSid + "_Users");
     res.status(200).send(twimlResponse.toString());
   });
@@ -511,6 +513,7 @@ module.exports.conferenceList = function(req, res, next) {
           progressConference.sid = conference.sid;
           progressConference.friendlyName = conference.friendlyName;
           progressConference.dateCreated = conference.dateCreated;
+          progressConference.region = conference.region;
           getParticipants(progressConference, function(err, result) {
             if (err) {
               return next();
@@ -671,7 +674,8 @@ module.exports.joinConference = function(req, res, next) {
     endConferenceOnExit: endConfMethod,
     statusCallback: server + "/events",
     statusCallbackMethod: "POST",
-    statusCallbackEvent: 'end leave'
+    statusCallbackEvent: 'end leave',
+    region: config.twilio.region
   });
 
   res.contentType("application/xml");
