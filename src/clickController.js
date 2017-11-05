@@ -218,10 +218,10 @@ module.exports.connectUsers = function(req, res, next){
     let server = getServer(req);
     const confDial = twimlResponse.dial({});
     confDial.conference({
+      region: config.twilio.region,
       statusCallback: server + "/events",
       statusCallbackMethod: "POST",
-      statusCallbackEvent: 'end leave',
-      region: config.twilio.region
+      statusCallbackEvent: 'end leave'
     }, req.body.CallSid + "_Users");
     res.status(200).send(twimlResponse.toString());
 }
@@ -271,10 +271,10 @@ module.exports.outboundCallPOST = function(req, res, next) {
     let server = getServer(req);
     const confDial = twimlResponse.dial({});
     confDial.conference({
+      region: config.twilio.region,
       statusCallback: server + "/events",
       statusCallbackMethod: "POST",
-      statusCallbackEvent: 'end leave',
-      region: config.twilio.region
+      statusCallbackEvent: 'end leave'
     }, req.body.CallSid + "_Users");
     res.status(200).send(twimlResponse.toString());
   });
@@ -672,11 +672,11 @@ module.exports.joinConference = function(req, res, next) {
   }
 
   dial.conference(conferenceName, {
+    region: config.twilio.region,
     endConferenceOnExit: endConfMethod,
     statusCallback: server + "/events",
     statusCallbackMethod: "POST",
-    statusCallbackEvent: 'end leave',
-    region: config.twilio.region
+    statusCallbackEvent: 'end leave'
   });
 
   res.contentType("application/xml");
