@@ -59,7 +59,6 @@ const client = twilio(config.twilio.apiKey, config.twilio.apiSecret, {
 //Function to get server URL
 function getServer(req) {
   let server = req.protocol + "://" + req.get("host");
-  server = "https://toolkit-dial.herokuapp.com";
   return server;
 }
 
