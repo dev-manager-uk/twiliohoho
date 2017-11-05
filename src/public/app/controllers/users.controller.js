@@ -1,5 +1,5 @@
 "use strict";
-app.controller("HomeController", function(
+app.controller("UsersController", function(
   $scope,
   $state,
   $interval,

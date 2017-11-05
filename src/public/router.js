@@ -30,6 +30,15 @@ app
 	  	}
 		}
 	})
+	.state('users',{
+    url: '/users',
+		views: {
+	  	'main': {
+				templateUrl: 'app/views/users.html',
+				controller: 'UsersController'
+	  	}
+		}
+	})
 	.state('user',{
     url: '/user/:user',
 		views: {
@@ -47,13 +56,20 @@ app
 				controller: 'ResetUsersController'
 	  	}
 		}
-  })
+	})
+	.state('manager',{
+    url: '/manager',
+		views: {
+	  	'main': {
+				templateUrl: 'app/views/manager.html'
+	  	}
+		}
+	})
 	.state('home',{
     url: '/',
 		views: {
 	  	'main': {
-				templateUrl: 'app/views/home.html',
-				controller: 'HomeController'
+				templateUrl: 'app/views/home.html'
 	  	}
 		}
 	});

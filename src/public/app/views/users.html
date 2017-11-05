@@ -1,0 +1,10 @@
+<div style="margin-top: 2vh;">
+  <div ng-repeat="user in users">
+    <label ng-click="click(user.text);" ng-if="user.user">
+      {{user.user}}
+    </label>
+    <label ng-click="click(user.text);" ng-if="!user.user">
+      {{user.text}}
+    </label>
+  </div>
+</div>
