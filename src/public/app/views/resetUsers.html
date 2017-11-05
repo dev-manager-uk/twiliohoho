@@ -1,0 +1,14 @@
+<div style="margin-top: 2vh;">
+  <md-button class="md-primary ng-cloak" aria-label="transferButton"
+    ng-click="refreshList()">
+    <label>Refresh List</label>
+  </md-button>
+  <div ng-repeat="user in users">
+    <label ng-if="user.user">
+      {{user.user}}
+    </label>
+    <label ng-if="!user.user">
+      {{user.text}}
+    </label>
+  </div>
+</div>

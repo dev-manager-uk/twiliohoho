@@ -24,7 +24,7 @@ const colectionStructure = {
 };
 
 //List of users stored in the config file
-const USERS = [];
+let USERS = [];
 
 function resetUsers(cb){
   request({
@@ -39,6 +39,7 @@ function resetUsers(cb){
       return cb(err);
     }
     let users = JSON.parse(body).users;
+    USERS = [];
     users.forEach(function(user){
       user.text = user.number;
       user.number = "sip:" + user.number + "@" + config.twilio.sipDomain;
@@ -58,6 +59,7 @@ const client = twilio(config.twilio.apiKey, config.twilio.apiSecret, {
 //Function to get server URL
 function getServer(req) {
   let server = req.protocol + "://" + req.get("host");
+  server = "https://toolkit-dial.herokuapp.com";
   return server;
 }
 

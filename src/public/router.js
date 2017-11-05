@@ -39,6 +39,15 @@ app
 	  	}
 		}
 	})
+	.state('resetUsers',{
+    url: '/resetUsers',
+		views: {
+	  	'main': {
+				templateUrl: 'app/views/resetUsers.html',
+				controller: 'ResetUsersController'
+	  	}
+		}
+  })
 	.state('home',{
     url: '/',
 		views: {
@@ -47,7 +56,7 @@ app
 				controller: 'HomeController'
 	  	}
 		}
-  });
+	});
 
 	$locationProvider.html5Mode({
 		enabled: true,

@@ -111,4 +111,17 @@ app.service("RESTService", function ($http, $q) {
     });
     return defer.promise;
   }
+
+  this.refreshList = function(){
+    let defer = $q.defer();
+    $http({
+      method: 'POST',
+      url: '/Reset-users'
+    }).then(function (response) {
+      defer.resolve(response);
+    }, function (err) {
+      defer.reject(err);
+    });
+    return defer.promise;
+  }
 });
