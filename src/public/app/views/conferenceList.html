@@ -18,7 +18,7 @@
         <md-button class="md-raised md-primary" ng-click="resumeCall(participant.callSid, conference)" 
           ng-if="participant.to.indexOf('sip:') > -1 && conference.friendlyName.indexOf('_User') > -1"  aria-label="ResumeButton">
           <label ng-if="participant.toUserText">Resume: {{participant.toUserText}}</label>
-          <label ng-if="!participant.toUserText">Resume: {{participant.to.substr(4,3)}}</label>
+          <label ng-if="!participant.toUserText">Resume: {{participant.to.substr(4,4)}}</label>
         </md-button>
         <hr/>
       </div>
