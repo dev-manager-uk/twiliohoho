@@ -667,9 +667,9 @@ module.exports.joinConference = function(req, res, next) {
 
   let endConfMethod = false;
 
-  if(conferenceName.indexOf('_Users') === -1){
-    endConfMethod = true;
-  }
+  // if(conferenceName.indexOf('_Users') === -1){
+  endConfMethod = true;
+  // }
 
   dial.conference(conferenceName, {
     region: config.twilio.region,
