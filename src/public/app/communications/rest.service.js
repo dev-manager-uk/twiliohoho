@@ -124,4 +124,17 @@ app.service("RESTService", function ($http, $q) {
     });
     return defer.promise;
   }
+
+  this.callNumber = function(phoneNumber, user){
+    let defer = $q.defer();
+    $http({
+      method: 'POST',
+      url: '/Click?Called=' + phoneNumber + '&user=' + user
+    }).then(function (response) {
+      defer.resolve(response);
+    }, function (err) {
+      defer.reject(err);
+    });
+    return defer.promise;
+  }
 });

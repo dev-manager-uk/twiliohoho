@@ -38,7 +38,14 @@
       <md-button class="md-raised md-primary" ng-if="user.friendlyName.indexOf('_User') > -1"
         aria-label="ResumeButton"  ng-click="resumeCall(user.callSid, user.friendlyName, user.conferenceSid)" >
         <label>Resume: {{user.text}}</label>
-    </md-button>
+      </md-button>
     </div>
   </div>
+</div>
+<div style="margin-top: 10vh; width: 70vw">
+  <label>Dial Number: </label>
+  <input type="text" class="form-control" ng-model="phoneNumber">
+  <md-button class="md-raised md-primary" aria-label="ResumeButton"  ng-click="callNumber(phoneNumber, selectedUser.text)" >
+    <label>Call</label>
+  </md-button>
 </div>

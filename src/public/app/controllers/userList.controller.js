@@ -186,4 +186,16 @@ app.controller("userListController", function(
     );
   };
 
+  $scope.callNumber = function(phoneNumber, user){
+    $scope.msg = undefined;
+    RESTService.callNumber(phoneNumber, user).then(
+      function(response) {
+        console.log("response", response);
+      },
+      function(err) {
+        $scope.msg = "It was not possible to dial this number"
+        console.log("err", err);
+      }
+    );
+  }
 });

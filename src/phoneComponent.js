@@ -53,12 +53,21 @@ function selectValidCaracters(formattedNumber, cb) {
 }
 
 module.exports.formatPhoneNumber = function(phoneNumber, cb) {
-  // Parse number with country code. 
-  let phoneNumberByCountryCode = phoneUtil.parse(phoneNumber, countryCode);
-  //Apply formatation
-  let formattedNumber = phoneUtil.format(phoneNumberByCountryCode, PNF.INTERNATIONAL);
-  //Remove spaces and invalid caracters
+  try {
+    // Parse number with country code. 
+    let phoneNumberByCountryCode = phoneUtil.parse(phoneNumber, countryCode);
+    //Apply formatation
+    let formattedNumber = phoneUtil.format(phoneNumberByCountryCode, PNF.INTERNATIONAL);
+    //Remove spaces and invalid caracters
+  }
+  catch(err) {
+    return cb(err);
+  }
+
   selectValidCaracters(formattedNumber, function (err, returnNumber) {
+    if(err){
+      return cb(err);
+    }
     return cb(null, returnNumber);
   });
 }
