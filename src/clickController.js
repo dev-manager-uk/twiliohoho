@@ -670,9 +670,9 @@ module.exports.joinConference = function(req, res, next) {
   if(conferenceName.indexOf('_Users') === -1){
     endConfMethod = true;
   }
-
+  //region: config.twilio.region,
   dial.conference(conferenceName, {
-    region: config.twilio.region,
+    region: "ie1",
     endConferenceOnExit: endConfMethod,
     statusCallback: server + "/events",
     statusCallbackMethod: "POST",
