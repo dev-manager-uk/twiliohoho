@@ -53,11 +53,13 @@ function selectValidCaracters(formattedNumber, cb) {
 }
 
 module.exports.formatPhoneNumber = function(phoneNumber, cb) {
+  let phoneNumberByCountryCode;
+  let formattedNumber;
   try {
     // Parse number with country code. 
-    let phoneNumberByCountryCode = phoneUtil.parse(phoneNumber, countryCode);
+    phoneNumberByCountryCode = phoneUtil.parse(phoneNumber, countryCode);
     //Apply formatation
-    let formattedNumber = phoneUtil.format(phoneNumberByCountryCode, PNF.INTERNATIONAL);
+    formattedNumber = phoneUtil.format(phoneNumberByCountryCode, PNF.INTERNATIONAL);
     //Remove spaces and invalid caracters
   }
   catch(err) {
